@@ -6,7 +6,8 @@ from pdb import set_trace
 from os.path import dirname, abspath, join, isdir
 
 from django.test.simple import DjangoTestSuiteRunner, reorder_suite
-from django.test.testcases import TestCase
+#from django.test.testcases import TestCase
+from django.test import LiveServerTestCase
 from django.db.models import get_app
 
 import behave
@@ -25,17 +26,26 @@ def get_features(app_module):
     else:
         return None
 
-class BehaveTestCase(unittest.TestCase):
+class DjangoBehaveTestCase(LiveServerTestCase):
     def __init__(self, features_dir):
         unittest.TestCase.__init__(self)
         self.features_dir = features_dir
+        # sys.argv kludge
+        # need to understand how to do this better
+        # temporarily lose all the options etc
+        # else behave will complain
+        old_argv = sys.argv
+        sys.argv = old_argv[:2]
         self.behave_config = Configuration()
+        sys.argv = old_argv
+        # end of sys.argv kludge
         self.behave_config.paths = [features_dir]
         self.behave_config.format = ['pretty']
 
     def runTest(self, result=None):
         # run behave on a single directory
         print "run: features_dir=%s" % (self.features_dir)
+
         # from behave/__main__.py
         stream = self.behave_config.output
         runner = Runner(self.behave_config)
@@ -70,17 +80,23 @@ class BehaveTestCase(unittest.TestCase):
 
         if failed:
             sys.exit(1)
-
-        
+        # end of from behave/__main__.py
         
 def make_test_suite(features_dir):
-    return BehaveTestCase(features_dir=features_dir)
+    return DjangoBehaveTestCase(features_dir=features_dir)
 
 class DjangoBehave_Runner(DjangoTestSuiteRunner):
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
-        # build standard Django test suite
-        suite = DjangoTestSuiteRunner.build_suite(self, test_labels, extra_tests, **kwargs)
 
+        # build standard Django test suite
+        #suite = DjangoTestSuiteRunner.build_suite(self, test_labels, extra_tests, **kwargs)
+
+        #
+        # TEMP: for now, ignore any tests but feature tests
+        # This will become an option
+        #
+        suite = unittest.TestSuite()
+        
 	#
 	# Add any BDD tests to it
 	#
@@ -100,6 +116,6 @@ class DjangoBehave_Runner(DjangoTestSuiteRunner):
                 features_test_suite = make_test_suite(features_dir)
                 suite.addTest(features_test_suite)
 
-	return reorder_suite(suite, (TestCase,))
+	return reorder_suite(suite, (LiveServerTestCase,))
 
 # eof:
