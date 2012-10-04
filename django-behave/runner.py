@@ -6,7 +6,6 @@ from pdb import set_trace
 from os.path import dirname, abspath, join, isdir
 
 from django.test.simple import DjangoTestSuiteRunner, reorder_suite
-#from django.test.testcases import TestCase
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
@@ -41,6 +40,12 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         # end of sys.argv kludge
         self.behave_config.paths = [features_dir]
         self.behave_config.format = ['pretty']
+
+        self.behave_config.server_url = 'http://localhost:8081'
+
+        # disable these in case you want to add set_trace in the tests you're developing
+        self.behave_config.stdout_capture = False
+        self.behave_config.stderr_capture = False
 
     def runTest(self, result=None):
         # run behave on a single directory
