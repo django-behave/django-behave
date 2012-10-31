@@ -83,9 +83,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
             sys.stderr.flush()
 
-        if failed:
-            sys.exit(1)
-        # end of from behave/__main__.py
+        self.assertFalse(failed)
         
 def make_test_suite(features_dir):
     return DjangoBehaveTestCase(features_dir=features_dir)
@@ -100,27 +98,28 @@ class DjangoBehave_Runner(DjangoTestSuiteRunner):
         # TEMP: for now, ignore any tests but feature tests
         # This will become an option
         #
-        suite = unittest.TestSuite()
+        #suite = unittest.TestSuite()
+        suite = super(DjangoBehave_Runner, self).build_suite(test_labels, extra_tests, **kwargs)
         
-	#
-	# Add any BDD tests to it
-	#
+        #
+        # Add any BDD tests to it
+        #
 
-	# always get all features for given apps (for convenience)
-	for label in test_labels:
-	    if '.' in label:
-	        print "Ignoring label with dot in: " % label
-		continue
-	    app = get_app(label)
-	    
-	    # Check to see if a separate 'features' module exists,
-	    # parallel to the models module
-	    features_dir = get_features(app)
+        # always get all features for given apps (for convenience)
+        for label in test_labels:
+            if '.' in label:
+                print "Ignoring label with dot in: " % label
+                continue
+            app = get_app(label)
+            
+            # Check to see if a separate 'features' module exists,
+            # parallel to the models module
+            features_dir = get_features(app)
             if features_dir is not None:
                 # build a test suite for this directory
                 features_test_suite = make_test_suite(features_dir)
                 suite.addTest(features_test_suite)
 
-	return reorder_suite(suite, (LiveServerTestCase,))
+        return reorder_suite(suite, (LiveServerTestCase,))
 
 # eof:
