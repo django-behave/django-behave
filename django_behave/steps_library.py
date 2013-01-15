@@ -1,3 +1,28 @@
+from behave import *
+
+#
+# V2 Steps - Ascending
+#
+
+def get(context, url_part):
+    full_url = get_url(context, url_part)
+    return page, resources = context.browser.get(full_url)
+
+def get_url(context, url_part):
+    if url_part[0] == '/': url_part = url_part[1:]
+    server_url = context.config.server_url if context.config.server_url[-1] == '/' else '%s/' % (context.config.server_url,)
+    return '%s%s' % (server_url, url_part,)
+
+
+@given(u'I am on "{url}"')
+def i_am_on(context, url):
+    return get(context, url)
+
+
+#
+# V1 Steps - Depreciating
+#
+
 @given(u'the user accesses the url "{url}"')
 def the_user_accesses_the_url(context, url):
     full_url = ''.join(['http://localhost:8081', url])

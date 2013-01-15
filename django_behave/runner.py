@@ -9,13 +9,15 @@ from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
-import behave
 from behave.configuration import Configuration, ConfigError
 from behave.runner import Runner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
+from selenium import webdriver
+
 import sys
+
 
 def get_features(app_module):
     app_dir = dirname(app_module.__file__)
@@ -25,10 +27,18 @@ def get_features(app_module):
     else:
         return None
 
+
 class DjangoBehaveTestCase(LiveServerTestCase):
+    features_dir = None
     def __init__(self, features_dir):
-        unittest.TestCase.__init__(self)
         self.features_dir = features_dir
+        super(DjangoBehaveTestCase, self).__init__()
+        unittest.TestCase.__init__(self)
+
+    def setUp(self):
+        self.setupBehave()
+
+    def setupBehave(self):
         # sys.argv kludge
         # need to understand how to do this better
         # temporarily lose all the options etc
@@ -38,11 +48,11 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.behave_config = Configuration()
         sys.argv = old_argv
         # end of sys.argv kludge
-        self.behave_config.paths = [features_dir]
+
+        self.behave_config.server_url = self.live_server_url # property of LiveServerTestCase
+        self.behave_config.browser = webdriver.Firefox()
+        self.behave_config.paths = [self.features_dir]
         self.behave_config.format = ['pretty']
-
-        self.behave_config.server_url = 'http://localhost:8081'
-
         # disable these in case you want to add set_trace in the tests you're developing
         self.behave_config.stdout_capture = False
         self.behave_config.stderr_capture = False
@@ -86,41 +96,46 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         if failed:
             sys.exit(1)
         # end of from behave/__main__.py
-        
-def make_test_suite(features_dir):
+
+
+def make_bdd_test_suite(features_dir):
     return DjangoBehaveTestCase(features_dir=features_dir)
 
-class DjangoBehave_Runner(DjangoTestSuiteRunner):
+
+def make_test_suite(test_labels, **kwargs):
+    test_suite = DjangoTestSuiteRunner()
+    return test_suite.build_suite(test_labels, **kwargs)
+
+
+class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
-
         # build standard Django test suite
-        #suite = DjangoTestSuiteRunner.build_suite(self, test_labels, extra_tests, **kwargs)
-
-        #
-        # TEMP: for now, ignore any tests but feature tests
-        # This will become an option
-        #
         suite = unittest.TestSuite()
-        
-	#
-	# Add any BDD tests to it
-	#
 
-	# always get all features for given apps (for convenience)
-	for label in test_labels:
-	    if '.' in label:
-	        print "Ignoring label with dot in: " % label
-		continue
-	    app = get_app(label)
-	    
-	    # Check to see if a separate 'features' module exists,
-	    # parallel to the models module
-	    features_dir = get_features(app)
+        #
+        # Run Normal Django Test Suite
+        #
+        std_test_suite = make_test_suite(test_labels, **kwargs)
+        suite.addTest(std_test_suite)
+
+        #
+        # Add BDD tests to it
+        #
+
+        # always get all features for given apps (for convenience)
+        for label in test_labels:
+            if '.' in label:
+                print "Ignoring label with dot in: " % label
+                continue
+            app = get_app(label)
+
+            # Check to see if a separate 'features' module exists,
+            # parallel to the models module
+            features_dir = get_features(app)
             if features_dir is not None:
                 # build a test suite for this directory
-                features_test_suite = make_test_suite(features_dir)
-                suite.addTest(features_test_suite)
+                suite.addTest(make_bdd_test_suite(features_dir))
 
-	return reorder_suite(suite, (LiveServerTestCase,))
+        return reorder_suite(suite, (LiveServerTestCase,))
 
 # eof:
