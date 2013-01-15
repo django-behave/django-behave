@@ -9,11 +9,12 @@ from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
-import behave
 from behave.configuration import Configuration, ConfigError
 from behave.runner import Runner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
+
+from selenium import webdriver
 
 import sys
 
@@ -28,9 +29,16 @@ def get_features(app_module):
 
 
 class DjangoBehaveTestCase(LiveServerTestCase):
+    features_dir = None
     def __init__(self, features_dir):
-        unittest.TestCase.__init__(self)
         self.features_dir = features_dir
+        super(DjangoBehaveTestCase, self).__init__()
+        unittest.TestCase.__init__(self)
+
+    def setUp(self):
+        self.setupBehave()
+
+    def setupBehave(self):
         # sys.argv kludge
         # need to understand how to do this better
         # temporarily lose all the options etc
@@ -40,11 +48,11 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.behave_config = Configuration()
         sys.argv = old_argv
         # end of sys.argv kludge
-        self.behave_config.paths = [features_dir]
-        self.behave_config.format = ['pretty']
 
         self.behave_config.server_url = self.live_server_url # property of LiveServerTestCase
-
+        self.behave_config.browser = webdriver.Firefox()
+        self.behave_config.paths = [self.features_dir]
+        self.behave_config.format = ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
         self.behave_config.stdout_capture = False
         self.behave_config.stderr_capture = False
