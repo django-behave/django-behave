@@ -120,7 +120,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 
-    'django-behave',
+    'django_behave',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -152,5 +152,5 @@ LOGGING = {
     }
 }
 
-TEST_RUNNER = 'django-behave.runner.DjangoBehave_Runner'
+TEST_RUNNER = 'django_behave.runner.DjangoBehaveTestSuiteRunner'
 # eof
