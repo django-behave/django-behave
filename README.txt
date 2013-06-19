@@ -7,7 +7,7 @@ GOALS:
 
 HOW TO USE:
 
-- add 'django-behave' as app
+- add 'django_behave' as app
 - set TEST_RUNNER to 'django_behave.runner.DjangoBehave_Runner'
 - add features directories to apps
-- copy django-behave/features/steps/library.py, if wanted.
+- copy django_behave/steps_library.py, if wanted.
