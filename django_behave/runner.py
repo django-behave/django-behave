@@ -9,13 +9,15 @@ from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
-import behave
 from behave.configuration import Configuration, ConfigError
 from behave.runner import Runner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
+from selenium import webdriver
+
 import sys
+
 
 def get_features(app_module):
     app_dir = dirname(app_module.__file__)
@@ -25,10 +27,25 @@ def get_features(app_module):
     else:
         return None
 
+
 class DjangoBehaveTestCase(LiveServerTestCase):
-    def __init__(self, features_dir):
+    def __init__(self, **kwargs):
+        self.features_dir = kwargs.pop('features_dir')
+        super(DjangoBehaveTestCase, self).__init__(**kwargs)
         unittest.TestCase.__init__(self)
-        self.features_dir = features_dir
+
+    def get_features_dir(self):
+        if isinstance(self.features_dir, basestring):
+            return [self.features_dir]
+        return self.features_dir
+
+    def get_browser(self):
+        return webdriver.Firefox()
+
+    def setUp(self):
+        self.setupBehave()
+
+    def setupBehave(self):
         # sys.argv kludge
         # need to understand how to do this better
         # temporarily lose all the options etc
@@ -38,11 +55,11 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.behave_config = Configuration()
         sys.argv = old_argv
         # end of sys.argv kludge
-        self.behave_config.paths = [features_dir]
+
+        self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
+        self.behave_config.browser = self.get_browser()
+        self.behave_config.paths = self.get_features_dir()
         self.behave_config.format = ['pretty']
-
-        self.behave_config.server_url = 'http://localhost:8081'
-
         # disable these in case you want to add set_trace in the tests you're developing
         self.behave_config.stdout_capture = False
         self.behave_config.stderr_capture = False
@@ -83,26 +100,32 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
             sys.stderr.flush()
 
-        self.assertFalse(failed)
-        
-def make_test_suite(features_dir):
-    return DjangoBehaveTestCase(features_dir=features_dir)
+        if failed:
+            sys.exit(1)
+        # end of from behave/__main__.py
 
-class DjangoBehave_Runner(DjangoTestSuiteRunner):
+
+def make_test_suite(test_labels, **kwargs):
+    test_suite = DjangoTestSuiteRunner()
+    return test_suite.build_suite(test_labels, **kwargs)
+
+
+class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
+    def make_bdd_test_suite(self, features_dir):
+        return DjangoBehaveTestCase(features_dir=features_dir)
+
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
-
         # build standard Django test suite
-        #suite = DjangoTestSuiteRunner.build_suite(self, test_labels, extra_tests, **kwargs)
+        suite = unittest.TestSuite()
 
         #
-        # TEMP: for now, ignore any tests but feature tests
-        # This will become an option
+        # Run Normal Django Test Suite
         #
-        #suite = unittest.TestSuite()
-        suite = super(DjangoBehave_Runner, self).build_suite(test_labels, extra_tests, **kwargs)
-        
+        std_test_suite = make_test_suite(test_labels, **kwargs)
+        suite.addTest(std_test_suite)
+
         #
-        # Add any BDD tests to it
+        # Add BDD tests to it
         #
 
         # always get all features for given apps (for convenience)
@@ -111,14 +134,13 @@ class DjangoBehave_Runner(DjangoTestSuiteRunner):
                 print "Ignoring label with dot in: " % label
                 continue
             app = get_app(label)
-            
+
             # Check to see if a separate 'features' module exists,
             # parallel to the models module
             features_dir = get_features(app)
             if features_dir is not None:
                 # build a test suite for this directory
-                features_test_suite = make_test_suite(features_dir)
-                suite.addTest(features_test_suite)
+                suite.addTest(self.make_bdd_test_suite(features_dir))
 
         return reorder_suite(suite, (LiveServerTestCase,))
 
