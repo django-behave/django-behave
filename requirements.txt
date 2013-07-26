@@ -1,4 +1,4 @@
 Django>=1.4
 selenium
 parse
-behave
+behave>=1.2.3
