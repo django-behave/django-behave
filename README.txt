@@ -45,7 +45,6 @@ The main one is the 'behave' module, of course, which provides the BDD toolset f
 Also used are:
 - django >= 1.4 (needed for the LiveServerTestCase)
 - selenium
-- splinter
 
 See requirements.txt for details.
 
