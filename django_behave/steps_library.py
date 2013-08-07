@@ -1,8 +1,26 @@
 from behave import *
 
-#
-# V2 Steps - Ascending
-#
+"""
+This file contains some useful generic steps for use with
+the splinter web automation library.
+
+http://splinter.cobrateam.info/
+
+The following user roles are used:
+'the user': a user without admin privileges
+'the adminuser': a user with admin privileges
+
+"""
+
+@given(u'any startpoint')
+def any_startpoint(context):
+    assert True
+
+@given(u'the user accesses the url "{url}"')
+def the_user_accesses_the_url(context, url):
+    full_url = ''.join([context.config.server_url, url])
+    context.browser.visit(full_url)
+
 
 def get(context, url_part):
     full_url = get_url(context, url_part)
@@ -17,11 +35,6 @@ def get_url(context, url_part):
 @given(u'I am on "{url}"')
 def i_am_on(context, url):
     return get(context, url)
-
-
-#
-# V1 Steps - Depreciating
-#
 
 @given(u'the user accesses the url "{url}"')
 def the_user_accesses_the_url(context, url):
@@ -55,4 +68,4 @@ def the_user_is_shown_the_home_page(context):
 def impl(context):
     assert False
 
-# eof 
+# eof
