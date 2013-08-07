@@ -3,7 +3,7 @@
 
 import unittest
 from pdb import set_trace
-from os.path import dirname, abspath, join, isdir
+from os.path import dirname, abspath, basename, join, isdir
 
 from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.test import LiveServerTestCase
@@ -19,8 +19,15 @@ from selenium import webdriver
 import sys
 
 
-def get_features(app_module):
+def get_app_dir(app_module):
     app_dir = dirname(app_module.__file__)
+    if basename(app_dir) == 'models':
+        app_dir = abspath(join(app_dir, '..'))
+    return app_dir
+
+
+def get_features(app_module):
+    app_dir = get_app_dir(app_module)
     features_dir = abspath(join(app_dir, 'features'))
     if isdir(features_dir):
         return features_dir
