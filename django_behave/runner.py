@@ -73,7 +73,6 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
     def runTest(self, result=None):
         # run behave on a single directory
-        print "run: features_dir=%s" % (self.features_dir)
 
         # from behave/__main__.py
         #stream = self.behave_config.output
