@@ -17,6 +17,8 @@ HOW TO USE
 - add 'django_behave' to INSTALLED_APPS
 - set TEST_RUNNER to 'django_behave.runner.DjangoBehaveTestSuiteRunner'
 - add features directories to apps
+- decide which automation library you want to use
+- setup your environment.py to use this library to open browser (see below)
 - copy django_behave/features/steps/library.py, if wanted.
 
 EXAMPLE
@@ -48,3 +50,22 @@ Also used are:
 
 See requirements.txt for details.
 
+AUTOMATION LIBRARY
+==================
+
+Django_behave is agnostic about which automation library you use inside the tests.
+
+I like splinter (http://splinter.cobrateam.info).
+
+You will need to setup a browser for use with this library.
+
+For example, my features/environment.py file has this:
+
+    from splinter.browser import Browser
+
+    def before_all(context):
+        context.browser = Browser()
+
+    def after_all(context):
+        context.browser.quit()
+        context.browser = None
