@@ -46,9 +46,6 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             return [self.features_dir]
         return self.features_dir
 
-    def get_browser(self):
-        return webdriver.Firefox()
-
     def setUp(self):
         self.setupBehave()
 
@@ -64,7 +61,6 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         # end of sys.argv kludge
 
         self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
-        self.behave_config.browser = self.get_browser()
         self.behave_config.paths = self.get_features_dir()
         self.behave_config.format = ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
