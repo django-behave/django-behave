@@ -8,7 +8,7 @@ def step_impl(context):
 def step_impl(context):
     assert True is not False
 
-@then('behave will test it for us!')
+@then('behave will test it for us')
 def step_impl(context):
     assert context.failed is False
 
