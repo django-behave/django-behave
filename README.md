@@ -29,10 +29,10 @@ Assuming you have a app called proj.apps.myapp
 Edit INSTALLED_APPS, as above.
 Edit TEST_RUNNER, as above.
 
-Create proj/apps/myapp/fixtures and proj/apps/myapp/fixtures/steps.
+Create proj/apps/myapp/features and proj/apps/myapp/features/steps.
 
-Copy example/tutorial.feature to the fixtures dir.
-Copy example/tutorial.py to the fixtures/steps dir.
+Copy example/tutorial.feature to the features dir.
+Copy example/tutorial.py to the features/steps dir.
 
 $ python manage.py test myapp
 
