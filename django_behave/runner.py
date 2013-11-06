@@ -5,7 +5,7 @@ import unittest
 from pdb import set_trace
 from os.path import dirname, abspath, basename, join, isdir
 
-from django.test.simple import DjangoTestSuiteRunner, reorder_suite
+from django.test.simple import DjangoTestSuiteRunner
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
@@ -13,6 +13,12 @@ from behave.configuration import Configuration, ConfigError
 from behave.runner import Runner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
+try:
+    # Django 1.6
+    from django.test.runner import reorder_suite
+except ImportError:
+    # < Django 1.6
+    from django.test.simple import reorder_suite
 
 from selenium import webdriver
 
