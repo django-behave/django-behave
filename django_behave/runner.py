@@ -1,12 +1,8 @@
 """Django test runner which uses behave for BDD tests.
 """
 
-<<<<<<< HEAD
-#from pdb import set_trace
-=======
 import unittest
 from optparse import make_option
->>>>>>> master
 from os.path import dirname, abspath, basename, join, isdir
 
 from django.test.simple import DjangoTestSuiteRunner
@@ -174,10 +170,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             sys.exit(1)
         # end of from behave/__main__.py
 
-<<<<<<< HEAD
 
-=======
->>>>>>> master
 class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
     # Set up to accept all of Behave's command line options and our own.  In
     # order to NOT conflict with Django's test command, we'll start all options
@@ -192,8 +185,6 @@ class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
         #
         # Add BDD tests to the extra_tests
         #
-<<<<<<< HEAD
-=======
         std_test_suite = super(DjangoBehaveTestSuiteRunner,self).build_suite(test_labels,**kwargs)
         suite.addTest(std_test_suite)
 
@@ -201,7 +192,6 @@ class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
         # Add BDD tests to it
         #
 
->>>>>>> master
         # always get all features for given apps (for convenience)
         for label in test_labels:
             if '.' in label:
