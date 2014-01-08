@@ -69,3 +69,28 @@ For example, my features/environment.py file has this:
     def after_all(context):
         context.browser.quit()
         context.browser = None
+
+COMMAND LINE OPTIONS
+====================
+
+It is possible to use Behave command line options.  In order to avoid conflict
+with Django's manage.py test options, all options meant for django-behave start
+with '--behave_'.  For example, given the following Behave command:
+
+    behave --no-color --tags @mytag ...
+    
+this would become:
+
+    ./manage.py test --behave_no-color --behave_tags @mytag ...
+    
+In addition, the option '--behave_browser' can allow the user to specify which
+browser to use for testing.  For example:
+
+    ./manage.py test --behave_browser firefox ...
+
+The splinter before_all() example above could then use this option:
+
+    def before_all(context):
+        context.browser = Browser(context.config.browser)
+
+            
