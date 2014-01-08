@@ -1,14 +1,19 @@
 """Django test runner which uses behave for BDD tests.
 """
 
+<<<<<<< HEAD
 #from pdb import set_trace
+=======
+import unittest
+from optparse import make_option
+>>>>>>> master
 from os.path import dirname, abspath, basename, join, isdir
 
 from django.test.simple import DjangoTestSuiteRunner
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
-from behave.configuration import Configuration, ConfigError
+from behave.configuration import Configuration, ConfigError, options
 from behave.runner import Runner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
@@ -32,9 +37,79 @@ def get_features(app_module):
         return None
 
 
+# Get Behave command line options and add our own
+def get_options():
+    option_list = (
+        make_option("--behave_browser",
+            action="store",
+            dest="browser",
+            help="Specify the browser to use for testing",
+        ),
+    )
+
+    option_info = {}
+
+    for fixed, keywords in options:
+        # Look for the long version of this option
+        long_option = None
+        for option in fixed:
+            if option.startswith("--"):
+                long_option = option
+                break
+
+        # Only deal with those options that have a long version
+        if long_option:
+            # Remove 'config_help' as that's not a valid optparse keyword
+            if keywords.has_key("config_help"):
+                keywords.pop("config_help")
+
+            name = "--behave_" + long_option[2:]
+
+            option_list = option_list + \
+                (make_option(name, **keywords),)
+
+            # Need to store a little info about the Behave option so that we
+            # can deal with it later.  'has_arg' refers to if the option has
+            # an argument.  A boolean option, for example, would NOT have an
+            # argument.
+            action = keywords.get("action", "store")
+            if action == "store" or action == "append":
+                has_arg = True
+            else:
+                has_arg = False
+
+            option_info.update({name: has_arg})
+
+    return (option_list, option_info)
+
+
+# Parse options that came in.  Deal with ours, create an ARGV for Behave with
+# it's options
+def parse_argv(argv, option_info):
+    new_argv = ["behave",]
+    our_opts = {"browser": None}
+
+    for index in xrange(len(argv)):
+        if argv[index].startswith("--"):
+            if argv[index] == "--behave_browser":
+                our_opts["browser"] = argv[index + 1]
+                index += 1  # Skip past browser option arg
+            else:
+                # Convert to Behave option
+                new_argv.append("--" + argv[index][9:])
+
+                # Add option argument if there is one
+                if option_info[argv[index]] == True:
+                    new_argv.append(argv[index+1])
+                    index += 1  # Skip past option arg
+
+    return (new_argv, our_opts)
+
+
 class DjangoBehaveTestCase(LiveServerTestCase):
     def __init__(self, **kwargs):
         self.features_dir = kwargs.pop('features_dir')
+        self.option_info = kwargs.pop('option_info')
         super(DjangoBehaveTestCase, self).__init__(**kwargs)
 
     def get_features_dir(self):
@@ -46,15 +121,12 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.setupBehave()
 
     def setupBehave(self):
-        # sys.argv kludge
-        # need to understand how to do this better
-        # temporarily lose all the options etc
-        # else behave will complain
+        # Create a sys.argv suitable for Behave to parse
         old_argv = sys.argv
-        sys.argv = old_argv[:2]
+        (sys.argv, our_opts) = parse_argv(old_argv, self.option_info)
         self.behave_config = Configuration()
         sys.argv = old_argv
-        # end of sys.argv kludge
+        self.behave_config.browser = our_opts["browser"]
 
         self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
         self.behave_config.paths = self.get_features_dir()
@@ -102,16 +174,34 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             sys.exit(1)
         # end of from behave/__main__.py
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
+    # Set up to accept all of Behave's command line options and our own.  In
+    # order to NOT conflict with Django's test command, we'll start all options
+    # with the prefix "--behave_" (we'll only do the long version of an option).
+    (option_list, option_info) = get_options()
+
     def make_bdd_test_suite(self, features_dir):
-        return DjangoBehaveTestCase(features_dir=features_dir)
+        return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
 
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         extra_tests = extra_tests or []
         #
         # Add BDD tests to the extra_tests
         #
+<<<<<<< HEAD
+=======
+        std_test_suite = super(DjangoBehaveTestSuiteRunner,self).build_suite(test_labels,**kwargs)
+        suite.addTest(std_test_suite)
+
+        #
+        # Add BDD tests to it
+        #
+
+>>>>>>> master
         # always get all features for given apps (for convenience)
         for label in test_labels:
             if '.' in label:

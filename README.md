@@ -29,10 +29,10 @@ Assuming you have a app called proj.apps.myapp
 Edit INSTALLED_APPS, as above.
 Edit TEST_RUNNER, as above.
 
-Create proj/apps/myapp/fixtures and proj/apps/myapp/fixtures/steps.
+Create proj/apps/myapp/features and proj/apps/myapp/features/steps.
 
-Copy example/tutorial.feature to the fixtures dir.
-Copy example/tutorial.py to the fixtures/steps dir.
+Copy example/tutorial.feature to the features dir.
+Copy example/tutorial.py to the features/steps dir.
 
 $ python manage.py test myapp
 
@@ -69,3 +69,28 @@ For example, my features/environment.py file has this:
     def after_all(context):
         context.browser.quit()
         context.browser = None
+
+COMMAND LINE OPTIONS
+====================
+
+It is possible to use Behave command line options.  In order to avoid conflict
+with Django's manage.py test options, all options meant for django-behave start
+with '--behave_'.  For example, given the following Behave command:
+
+    behave --no-color --tags @mytag ...
+    
+this would become:
+
+    ./manage.py test --behave_no-color --behave_tags @mytag ...
+    
+In addition, the option '--behave_browser' can allow the user to specify which
+browser to use for testing.  For example:
+
+    ./manage.py test --behave_browser firefox ...
+
+The splinter before_all() example above could then use this option:
+
+    def before_all(context):
+        context.browser = Browser(context.config.browser)
+
+            
