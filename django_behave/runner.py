@@ -5,7 +5,10 @@ import unittest
 from pdb import set_trace
 from os.path import dirname, abspath, basename, join, isdir
 
-from django.test.simple import DjangoTestSuiteRunner, reorder_suite
+try:
+    from django.test.runner import DiscoverRunner, reorder_suite
+except ImportError: # Pre-1.6 compatibility
+    from django.test.simple import DjangoTestSuiteRunner as DiscoverRunner, reorder_suite
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
@@ -106,7 +109,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             sys.exit(1)
         # end of from behave/__main__.py
 
-class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
+class DjangoBehaveTestSuiteRunner(DiscoverRunner):
     def make_bdd_test_suite(self, features_dir):
         return DjangoBehaveTestCase(features_dir=features_dir)
 
