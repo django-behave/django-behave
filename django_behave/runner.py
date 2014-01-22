@@ -126,7 +126,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
         self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
         self.behave_config.paths = self.get_features_dir()
-        self.behave_config.format = ['pretty']
+        self.behave_config.format = self.behave_config.format if self.behave_config.format else ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
         self.behave_config.stdout_capture = False
         self.behave_config.stderr_capture = False
