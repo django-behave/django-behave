@@ -43,7 +43,7 @@ def get_options():
         ),
     )
 
-    option_info = {}
+    option_info = {"--behave_browser": True}
 
     for fixed, keywords in options:
         # Look for the long version of this option
@@ -82,11 +82,15 @@ def get_options():
 # Parse options that came in.  Deal with ours, create an ARGV for Behave with
 # it's options
 def parse_argv(argv, option_info):
+    behave_options = option_info.keys()
     new_argv = ["behave",]
     our_opts = {"browser": None}
 
     for index in xrange(len(argv)):
-        if argv[index].startswith("--"):
+        # If it's a behave option AND is the long version (starts with '--'),
+        # then proceed to save the information.  If it's not a behave option
+        # (which means it's most likely a Django test option), we ignore it.
+        if argv[index] in behave_options and argv[index].startswith("--"):
             if argv[index] == "--behave_browser":
                 our_opts["browser"] = argv[index + 1]
                 index += 1  # Skip past browser option arg
