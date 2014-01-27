@@ -43,7 +43,7 @@ def get_options():
         ),
     )
 
-    option_info = {}
+    option_info = {"--behave_browser": True}
 
     for fixed, keywords in options:
         # Look for the long version of this option
