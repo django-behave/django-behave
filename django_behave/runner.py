@@ -148,7 +148,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         except ConfigError, e:
             sys.exit(str(e))
 
-        if self.behave_config.show_snippets and runner.undefined_steps:
+        if self.behave_config.show_snippets and runner.undefined:
             msg = u"\nYou can implement step definitions for undefined steps with "
             msg += u"these snippets:\n\n"
             printed = set()
@@ -158,7 +158,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             else:
                 string_prefix = u"(u'"
 
-            for step in runner.undefined_steps:
+            for step in set(runner.undefined):
                 if step in printed:
                     continue
                 printed.add(step)
