@@ -4,26 +4,30 @@ import subprocess
 class BehaveTest(unittest.TestCase):
     def run_test(self, app='example_app', settings='example_proj.settings', *args, **kwargs):
         """
-        test the given app with thi given args and kwargs passed to manage.py. kwargs are converted from
+        test the given app with thiegiven args and kwargs passed to manage.py. kwargs are converted from
         {'a': 'b'} to --a=b
+
+        returns a tuple: (stdout, stderr)
         """
         kwargs['settings'] = settings
         kwargs = ['--{}={}'.format(k, v) for k, v in kwargs.items()]
-        p = subprocess.Popen(['./manage.py', 'test', app] + list(args) + kwargs, stdout=subprocess.PIPE)
-        return p.communicate()[0]
+        p = subprocess.Popen(['./manage.py', 'test', app] + list(args) + kwargs, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return p.communicate()
 
     def test_runner_with_default_args_expect_bdd_tests_run(self):
         actual = self.run_test()
 
-        self.assertIn('features passed', actual)
+        self.assertIn('scenario passed', actual[0])
 
     def test_runner_with_failfast_and_failing_unittest_expect_bdd_tests_not_run(self):
         actual = self.run_test('--failfast')
 
-        self.assertNotIn('features passed', actual)
+        self.assertNotIn('scenario passed', actual[0])
 
     def test_runner_with_old_tag_specified_expect_only_old_bdd_test_run(self):
-        pass
+        actual = self.run_test('--behave_tags @old')
+
+        self.assertIn('1 scenario passed, 0 failed, 1 skipped', actual[0])
 
 if __name__ == '__main__':
     unittest.main()

@@ -4,8 +4,9 @@ from django.test import TestCase
 
 class ExampleTest(TestCase):
     def test_failing(self):
-    	""" This is a failing test """
+    	""" This is a failing unit test """
         self.assertTrue(False)
 
     def test_passing(self):
+    	""" This is a passing unit test """
         self.assertTrue(True)
