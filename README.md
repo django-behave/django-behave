@@ -96,4 +96,8 @@ The splinter before_all() example above could then use this option:
 TESTING
 =======
 
+You can run all unittest2 tests with the following:
 
+    python tests.py
+
+The tests use the example_proj project which has installed the example_app application.
