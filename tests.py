@@ -4,7 +4,7 @@ import subprocess
 class BehaveTest(unittest.TestCase):
     def run_test(self, app='example_app', settings='example_proj.settings', *args, **kwargs):
         """
-        test the given app with thiegiven args and kwargs passed to manage.py. kwargs are converted from
+        test the given app with the given args and kwargs passed to manage.py. kwargs are converted from
         {'a': 'b'} to --a=b
 
         returns a tuple: (stdout, stderr)
@@ -31,30 +31,3 @@ class BehaveTest(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
-
-"""
-
-import subprocess
-p = subprocess.Popen(['./manage.py', 'test', 'example_app', '--failfast', '--settings=example_proj.settings'], stdout=subprocess.PIPE)
-out = p.communicate()[0]
-
-import sys
-from cStringIO import StringIO
-def test():
-    backup_out = sys.stdout
-    sys.stdout = StringIO()
-    backup_err = sys.stderr
-    sys.stderr = StringIO()
-    try:
-        from django.core.management import call_command
-        call_command('test', 'example_app')
-    except SystemExit:
-        print 'attempted exit!'
-    out = sys.stdout.getvalue()
-    err = sys.stderr.getvalue()
-    sys.stdout.close()
-    sys.stderr.close()
-    sys.stdout = backup_out
-    sys.stderr = backup_err
-    return out, err
-"""
