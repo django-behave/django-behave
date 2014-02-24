@@ -1,3 +1,18 @@
+==================================
+=
+= LOOKING FOR A NEW MAINTAINER
+=
+==================================
+
+CAN YOU HELP? 
+I don't have the time to maintain this properly. 
+Would you like to volunteer to take it over?
+Or suggest someone who'd be good to do it?
+
+Thanks
+Rachel
+
+
 django-behave
 =============
 
