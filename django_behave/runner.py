@@ -12,7 +12,7 @@ from django.test import LiveServerTestCase
 from django.db.models import get_app
 
 from behave.configuration import Configuration, ConfigError, options
-from behave.runner import Runner
+from behave.runner import BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
@@ -146,7 +146,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
         # from behave/__main__.py
         #stream = self.behave_config.output
-        runner = Runner(self.behave_config)
+        runner = BehaveRunner(self.behave_config)
         try:
             failed = runner.run()
         except ParserError, e:
@@ -154,7 +154,12 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         except ConfigError, e:
             sys.exit(str(e))
 
-        if self.behave_config.show_snippets and runner.undefined:
+        try:
+            undefined_steps = runner.undefined_steps
+        except AttributeError:
+            undefined_steps = runner.undefined
+
+        if self.behave_config.show_snippets and undefined_steps:
             msg = u"\nYou can implement step definitions for undefined steps with "
             msg += u"these snippets:\n\n"
             printed = set()
@@ -164,7 +169,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             else:
                 string_prefix = u"(u'"
 
-            for step in set(runner.undefined):
+            for step in set(undefined_steps):
                 if step in printed:
                     continue
                 printed.add(step)
