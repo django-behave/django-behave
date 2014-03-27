@@ -12,7 +12,7 @@ from django.test import LiveServerTestCase
 from django.db.models import get_app
 
 from behave.configuration import Configuration, ConfigError, options
-from behave.runner import BehaveRunner
+from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
