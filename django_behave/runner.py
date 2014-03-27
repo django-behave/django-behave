@@ -1,11 +1,13 @@
 """Django test runner which uses behave for BDD tests.
 """
 
-import unittest
 from optparse import make_option
 from os.path import dirname, abspath, basename, join, isdir
 
-from django.test.simple import DjangoTestSuiteRunner
+try:
+    from django.test.runner import DiscoverRunner as BaseRunner
+except ImportError:
+    from django.test.simple import DjangoTestSuiteRunner as BaseRunner
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
@@ -55,6 +57,10 @@ def get_options():
 
         # Only deal with those options that have a long version
         if long_option:
+            # remove function types, as they are not compatible with optparse
+            if hasattr(keywords.get('type'), '__call__'):
+                del keywords['type']
+
             # Remove 'config_help' as that's not a valid optparse keyword
             if keywords.has_key("config_help"):
                 keywords.pop("config_help")
@@ -175,7 +181,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         # end of from behave/__main__.py
 
 
-class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
+class DjangoBehaveTestSuiteRunner(BaseRunner):
     # Set up to accept all of Behave's command line options and our own.  In
     # order to NOT conflict with Django's test command, we'll start all options
     # with the prefix "--behave_" (we'll only do the long version of an option).
