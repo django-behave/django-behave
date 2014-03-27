@@ -34,7 +34,7 @@ class BehaveTest(unittest.TestCase):
     def test_runner_with_undefined_steps_expect_display_undefined_steps(self):
         actual = self.run_test()        
 
-        self.assertIn('You can implement step definitions for undefined steps with', actual[0])
+        self.assertIn('You can implement step definitions for undefined steps with', actual[1])
 
 if __name__ == '__main__':
     unittest.main()
