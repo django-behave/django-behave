@@ -13,6 +13,12 @@ from behave.configuration import Configuration, ConfigError, options
 from behave.runner import Runner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
+try:
+    # Django 1.6
+    from django.test.runner import reorder_suite
+except ImportError:
+    # < Django 1.6
+    from django.test.simple import reorder_suite
 
 import sys
 
