@@ -1,7 +1,11 @@
-import unittest2
+try:
+    import unittest2 as unittest  # import unittest2 for 2.6
+except ImportError:
+    import unittest
+
 import subprocess
 
-class BehaveTest(unittest2.TestCase):
+class BehaveTest(unittest.TestCase):
     def run_test(self, app='example_app', settings='example_proj.settings', *args, **kwargs):
         """
         test the given app with the given args and kwargs passed to manage.py. kwargs are converted from
@@ -37,4 +41,4 @@ class BehaveTest(unittest2.TestCase):
         self.assertIn('You can implement step definitions for undefined steps with', actual[1])
 
 if __name__ == '__main__':
-    unittest2.main()
+    unittest.main()
