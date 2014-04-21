@@ -12,7 +12,7 @@ class BehaveTest(unittest.TestCase):
         args = list(args)
         kwargs['settings'] = settings
         for k, v in kwargs.items():
-            args += ['--{}'.format(k), v]
+            args += ['--%s' % k, v]
         p = subprocess.Popen(['./manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return p.communicate()
 
