@@ -6,11 +6,9 @@ env:
   - DJANGO=1.4
   - DJANGO=1.5
   - DJANGO=1.6
-  - BEHAVE=1.2.3
 # command to install dependencies
 install: 
-  - pip install django=$DJANGO
-  - pip install behave=$BEHAVE
+  - pip install django==$DJANGO
   - "pip install -r requirements.txt"
 # command to run tests
 script: python tests.py
