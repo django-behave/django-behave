@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/django-behave/django-behave.svg?branch=master)](https://travis-ci.org/django-behave/django-behave)  
+tested on Python v2.6-2.7 and Django v1.4-1.6
+
 ==================================
 LOOKING FOR A NEW MAINTAINER
 ==================================
