@@ -1,4 +1,8 @@
-import unittest
+try:
+    import unittest2 as unittest  # import unittest2 for 2.6
+except ImportError:
+    import unittest
+
 import subprocess
 
 class BehaveTest(unittest.TestCase):
@@ -12,7 +16,7 @@ class BehaveTest(unittest.TestCase):
         args = list(args)
         kwargs['settings'] = settings
         for k, v in kwargs.items():
-            args += ['--{}'.format(k), v]
+            args += ['--%s' % k, v]
         p = subprocess.Popen(['./manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return p.communicate()
 
