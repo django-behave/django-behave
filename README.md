@@ -46,8 +46,8 @@ Edit TEST_RUNNER, as above.
 
 Create proj/apps/myapp/features and proj/apps/myapp/features/steps.
 
-Copy example/tutorial.feature to the features dir.
-Copy example/tutorial.py to the features/steps dir.
+Copy example_app/features/tutorial.feature to the features dir.
+Copy example_app/features/steps/tutorial.py to the features/steps dir.
 
 $ python manage.py test myapp
 
@@ -108,4 +108,11 @@ The splinter before_all() example above could then use this option:
     def before_all(context):
         context.browser = Browser(context.config.browser)
 
-            
+TESTING
+=======
+
+You can run all unittest2 tests with the following:
+
+    python tests.py
+
+The tests use the example_proj project which has installed the example_app application.

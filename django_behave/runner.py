@@ -1,16 +1,18 @@
 """Django test runner which uses behave for BDD tests.
 """
 
-import unittest
 from optparse import make_option
 from os.path import dirname, abspath, basename, join, isdir
 
-from django.test.simple import DjangoTestSuiteRunner
+try:
+    from django.test.runner import DiscoverRunner as BaseRunner
+except ImportError:
+    from django.test.simple import DjangoTestSuiteRunner as BaseRunner
 from django.test import LiveServerTestCase
 from django.db.models import get_app
 
 from behave.configuration import Configuration, ConfigError, options
-from behave.runner import Runner
+from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
@@ -43,7 +45,7 @@ def get_options():
         ),
     )
 
-    option_info = {}
+    option_info = {"--behave_browser": True}
 
     for fixed, keywords in options:
         # Look for the long version of this option
@@ -55,6 +57,10 @@ def get_options():
 
         # Only deal with those options that have a long version
         if long_option:
+            # remove function types, as they are not compatible with optparse
+            if hasattr(keywords.get('type'), '__call__'):
+                del keywords['type']
+
             # Remove 'config_help' as that's not a valid optparse keyword
             if keywords.has_key("config_help"):
                 keywords.pop("config_help")
@@ -82,11 +88,15 @@ def get_options():
 # Parse options that came in.  Deal with ours, create an ARGV for Behave with
 # it's options
 def parse_argv(argv, option_info):
+    behave_options = option_info.keys()
     new_argv = ["behave",]
     our_opts = {"browser": None}
 
     for index in xrange(len(argv)):
-        if argv[index].startswith("--"):
+        # If it's a behave option AND is the long version (starts with '--'),
+        # then proceed to save the information.  If it's not a behave option
+        # (which means it's most likely a Django test option), we ignore it.
+        if argv[index] in behave_options and argv[index].startswith("--"):
             if argv[index] == "--behave_browser":
                 our_opts["browser"] = argv[index + 1]
                 index += 1  # Skip past browser option arg
@@ -126,7 +136,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
         self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
         self.behave_config.paths = self.get_features_dir()
-        self.behave_config.format = ['pretty']
+        self.behave_config.format = self.behave_config.format if self.behave_config.format else ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
         self.behave_config.stdout_capture = False
         self.behave_config.stderr_capture = False
@@ -136,7 +146,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
         # from behave/__main__.py
         #stream = self.behave_config.output
-        runner = Runner(self.behave_config)
+        runner = BehaveRunner(self.behave_config)
         try:
             failed = runner.run()
         except ParserError, e:
@@ -144,7 +154,12 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         except ConfigError, e:
             sys.exit(str(e))
 
-        if self.behave_config.show_snippets and runner.undefined:
+        try:
+            undefined_steps = runner.undefined_steps
+        except AttributeError:
+            undefined_steps = runner.undefined
+
+        if self.behave_config.show_snippets and undefined_steps:
             msg = u"\nYou can implement step definitions for undefined steps with "
             msg += u"these snippets:\n\n"
             printed = set()
@@ -154,7 +169,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             else:
                 string_prefix = u"(u'"
 
-            for step in set(runner.undefined):
+            for step in set(undefined_steps):
                 if step in printed:
                     continue
                 printed.add(step)
@@ -171,7 +186,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         # end of from behave/__main__.py
 
 
-class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
+class DjangoBehaveTestSuiteRunner(BaseRunner):
     # Set up to accept all of Behave's command line options and our own.  In
     # order to NOT conflict with Django's test command, we'll start all options
     # with the prefix "--behave_" (we'll only do the long version of an option).
@@ -185,17 +200,11 @@ class DjangoBehaveTestSuiteRunner(DjangoTestSuiteRunner):
         #
         # Add BDD tests to the extra_tests
         #
-        std_test_suite = super(DjangoBehaveTestSuiteRunner,self).build_suite(test_labels,**kwargs)
-        suite.addTest(std_test_suite)
-
-        #
-        # Add BDD tests to it
-        #
 
         # always get all features for given apps (for convenience)
         for label in test_labels:
             if '.' in label:
-                print "Ignoring label with dot in: " % label
+                print "Ignoring label with dot in: %s" % label
                 continue
             app = get_app(label)
 
