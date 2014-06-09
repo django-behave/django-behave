@@ -138,8 +138,10 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.behave_config.paths = self.get_features_dir()
         self.behave_config.format = self.behave_config.format if self.behave_config.format else ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
-        self.behave_config.stdout_capture = False
-        self.behave_config.stderr_capture = False
+        self.behave_config.stdout_capture =\
+            self.behave_config.stdout_capture if self.behave_config.stdout_capture else False
+        self.behave_config.stderr_capture =\
+            self.behave_config.stderr_capture if self.behave_config.stderr_capture else False
 
     def runTest(self, result=None):
         # run behave on a single directory
