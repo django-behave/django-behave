@@ -20,6 +20,11 @@ class BehaveTest(unittest.TestCase):
         p = subprocess.Popen(['./example_proj/manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return p.communicate()
 
+    def test_runner_with_nested_app_expect_bdd_tests_run(self):
+        actual = self.run_test(app='sub_app')
+
+        self.assertIn('scenario passed', actual[0])
+
     def test_runner_with_default_args_expect_bdd_tests_run(self):
         actual = self.run_test()
 
