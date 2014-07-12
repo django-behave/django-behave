@@ -19,6 +19,7 @@ from behave.formatter.ansi_escapes import escapes
 import sys
 
 
+
 def get_app_dir(app_module):
     app_dir = dirname(app_module.__file__)
     if basename(app_dir) == 'models':
@@ -92,7 +93,7 @@ def parse_argv(argv, option_info):
     new_argv = ["behave",]
     our_opts = {"browser": None}
 
-    for index in xrange(len(argv)):
+    for index in range(len(argv)): #using range to have compatybility with Py3
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
@@ -151,9 +152,9 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         runner = BehaveRunner(self.behave_config)
         try:
             failed = runner.run()
-        except ParserError, e:
+        except ParserError as e:
             sys.exit(str(e))
-        except ConfigError, e:
+        except ConfigError as e:
             sys.exit(str(e))
 
         try:
@@ -206,7 +207,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
         # always get all features for given apps (for convenience)
         for label in test_labels:
             if '.' in label:
-                print "Ignoring label with dot in: %s" % label
+                print("Ignoring label with dot in: %s" % label)
                 continue
             app = get_app(label)
 
