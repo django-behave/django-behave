@@ -64,7 +64,7 @@ def get_options():
                 del keywords['type']
 
             # Remove 'config_help' as that's not a valid optparse keyword
-            if keywords.has_key("config_help"):
+            if "config_help" in keywords:
                 keywords.pop("config_help")
 
             name = "--behave_" + long_option[2:]
