@@ -8,7 +8,11 @@ try:
     from django.test.runner import DiscoverRunner as BaseRunner
 except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
-from django.test import LiveServerTestCase
+
+try:
+    from django.contrib.staticfiles.testing import StaticLiveServerCase as LiveServerTestCase
+except ImportError:
+    from django.test import LiveServerTestCase
 from django.db.models import get_app
 from django.utils import six
 from behave.configuration import Configuration, ConfigError, options
