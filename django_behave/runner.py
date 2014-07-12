@@ -10,11 +10,12 @@ except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
 from django.test import LiveServerTestCase
 from django.db.models import get_app
-
+from django.utils import six
 from behave.configuration import Configuration, ConfigError, options
 from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
+
 
 import sys
 
@@ -120,7 +121,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         super(DjangoBehaveTestCase, self).__init__(**kwargs)
 
     def get_features_dir(self):
-        if isinstance(self.features_dir, basestring):
+        if isinstance(self.features_dir, six.string_types):
             return [self.features_dir]
         return self.features_dir
 
