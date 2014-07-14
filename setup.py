@@ -11,6 +11,7 @@ setup(
     url='https://github.com/rwillmer/django-behave',
     classifiers=[
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
         'Framework :: Django',
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
