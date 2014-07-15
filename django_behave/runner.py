@@ -15,7 +15,12 @@ except ImportError:
     from django.test import LiveServerTestCase
 
 from django.db.models import get_app
-from django.utils import six
+
+try: # I'm not sure if Django 1.4 does have six package
+    from django.utils.six.moves import range
+except ImportError:
+    pass
+
 from behave.configuration import Configuration, ConfigError, options
 from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
