@@ -8,8 +8,8 @@ env:
   - DJANGO=django==1.4
   - DJANGO=django==1.5
   - DJANGO=django==1.6
-  - DJANGO=django==https://www.djangoproject.com/download/1.7c1/tarball/
-# Django 1.4 doesn't support Python 3 
+  - DJANGO=https://www.djangoproject.com/download/1.7c1/tarball/
+# Django 1.4 doesn't support Python 3
 matrix:
   exclude:
     - python: "3.3"
