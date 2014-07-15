@@ -9,10 +9,17 @@ env:
   - DJANGO=django==1.5
   - DJANGO=django==1.6
   - DJANGO=django==https://www.djangoproject.com/download/1.7c1/tarball/
+# Django 1.4 doesn't support Python 3 
+matrix:
+  exclude:
+    - python: "3.3"
+      env: DJANGO=django==1.4
+    - python: "3.4"
+      env: DJANGO=django==1.4
 # command to install dependencies
 # unittest2 should be only installed for python 2.6
 install:
-  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi  
+  - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install unittest2; fi
   - pip install $DJANGO
   - "pip install -r requirements.txt"
 # command to run tests
