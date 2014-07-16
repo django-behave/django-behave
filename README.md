@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/django-behave/django-behave.svg?branch=master)](https://travis-ci.org/django-behave/django-behave)  
-tested on Python v2.6-2.7 and Django v1.4-1.6  
-Behave is not 3.x compatible yet, so do not test 3+
+tested on Python v2.6, 2.7, 3.3 and 3.4 and Django v1.4-1.7rc1
+
+**Behave still has many 3.x bugs. Please ensure the bug is with django-behave and not with Behave.**
 
 django-behave
 =============
