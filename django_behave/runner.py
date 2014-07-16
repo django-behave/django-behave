@@ -8,15 +8,24 @@ try:
     from django.test.runner import DiscoverRunner as BaseRunner
 except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
-from django.test import LiveServerTestCase
+
+try: # This is for Django 1.7 where Staticliveservercase is introduced
+    from django.contrib.staticfiles.testing import StaticLiveServerCase as LiveServerTestCase
+except ImportError:
+    from django.test import LiveServerTestCase
+
 from django.db.models import get_app
+from django.utils import six
+from django.utils.six.moves import xrange
 
 from behave.configuration import Configuration, ConfigError, options
 from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
+
 import sys
+
 
 
 def get_app_dir(app_module):
@@ -62,7 +71,7 @@ def get_options():
                 del keywords['type']
 
             # Remove 'config_help' as that's not a valid optparse keyword
-            if keywords.has_key("config_help"):
+            if "config_help" in keywords:
                 keywords.pop("config_help")
 
             name = "--behave_" + long_option[2:]
@@ -92,7 +101,7 @@ def parse_argv(argv, option_info):
     new_argv = ["behave",]
     our_opts = {"browser": None}
 
-    for index in xrange(len(argv)):
+    for index in xrange(len(argv)): #using range to have compatybility with Py3
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
@@ -119,7 +128,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         super(DjangoBehaveTestCase, self).__init__(**kwargs)
 
     def get_features_dir(self):
-        if isinstance(self.features_dir, basestring):
+        if isinstance(self.features_dir, six.string_types):
             return [self.features_dir]
         return self.features_dir
 
@@ -151,9 +160,9 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         runner = BehaveRunner(self.behave_config)
         try:
             failed = runner.run()
-        except ParserError, e:
+        except ParserError as e:
             sys.exit(str(e))
-        except ConfigError, e:
+        except ConfigError as e:
             sys.exit(str(e))
 
         try:
@@ -206,7 +215,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
         # always get all features for given apps (for convenience)
         for label in test_labels:
             if '.' in label:
-                print "Ignoring label with dot in: %s" % label
+                print("Ignoring label with dot in: %s" % label)
                 continue
             app = get_app(label)
 
