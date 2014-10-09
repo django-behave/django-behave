@@ -9,8 +9,10 @@ try:
 except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
 
-try: # This is for Django 1.7 where Staticliveservercase is introduced
-    from django.contrib.staticfiles.testing import StaticLiveServerCase as LiveServerTestCase
+try:
+    # This is for Django 1.7 where StaticLiveServerTestCase is needed for
+    # static files to "just work"
+    from django.contrib.staticfiles.testing import StaticLiveServerTestCase as LiveServerTestCase
 except ImportError:
     from django.test import LiveServerTestCase
 
