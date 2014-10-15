@@ -217,9 +217,11 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
         # always get all features for given apps (for convenience)
         for label in test_labels:
             if '.' in label:
-                print("Ignoring label with dot in: %s" % label)
-                continue
-            app = get_app(label)
+                short_label = label.split('.')[-1]
+            else:
+                short_label = None
+
+            app = get_app(short_label or label)
 
             # Check to see if a separate 'features' module exists,
             # parallel to the models module
