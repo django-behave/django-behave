@@ -160,12 +160,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         # from behave/__main__.py
         #stream = self.behave_config.output
         runner = BehaveRunner(self.behave_config)
-        try:
-            failed = runner.run()
-        except ParserError as e:
-            sys.exit(str(e))
-        except ConfigError as e:
-            sys.exit(str(e))
+        failed = runner.run()
 
         try:
             undefined_steps = runner.undefined_steps
@@ -195,7 +190,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             sys.stderr.flush()
 
         if failed:
-            sys.exit(1)
+            raise AssertionError('There were behave failures, see output above')
         # end of from behave/__main__.py
 
 
