@@ -19,6 +19,7 @@ except ImportError:
 from django.db.models import get_app
 from django.utils import six
 from django.utils.six.moves import xrange
+from django.core.exceptions import ImproperlyConfigured
 
 from behave.configuration import Configuration, ConfigError, options
 from behave.runner import Runner as BehaveRunner
@@ -212,9 +213,16 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
         # always get all features for given apps (for convenience)
         for label in test_labels:
             if '.' in label:
-                print("Ignoring label with dot in: %s" % label)
+                # Assume the last value in the dot notation label is the app
+                # name
+                label = label.split('.')[-1]
+
+            # If this errors out, it means it was not an app name
+            try:
+                app = get_app(label)
+            except ImproperlyConfigured:
                 continue
-            app = get_app(label)
+
 
             # Check to see if a separate 'features' module exists,
             # parallel to the models module

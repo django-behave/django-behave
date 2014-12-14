@@ -122,6 +122,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 
     'django_behave',
+    'example_proj.apps.subdirectory_app',
 )
 
 # A sample logging configuration. The only tangible logging
