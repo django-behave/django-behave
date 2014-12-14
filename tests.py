@@ -48,5 +48,10 @@ class BehaveTest(unittest.TestCase):
         self.assertIn(
             'You can implement step definitions for undefined steps with', actual.err)
 
+    def test_runner_with_subdirectory_app(self):
+        actual = self.run_test(app='example_proj.apps.subdirectory_app')
+
+        self.assertIn('scenario passed', actual.out)
+
 if __name__ == '__main__':
     unittest.main()
