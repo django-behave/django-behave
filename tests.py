@@ -8,7 +8,9 @@ from collections import namedtuple
 
 Std = namedtuple('std', ['out', 'err'])
 
+
 class BehaveTest(unittest.TestCase):
+
     def run_test(self, app='example_app', settings='example_proj.settings', *args, **kwargs):
         """
         test the given app with the given args and kwargs passed to manage.py. kwargs are converted from
@@ -20,7 +22,8 @@ class BehaveTest(unittest.TestCase):
         kwargs['settings'] = settings
         for k, v in kwargs.items():
             args += ['--%s' % k, v]
-        p = subprocess.Popen(['./manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(
+            ['python', 'manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         return Std(*[str(item) for item in out])
 
@@ -42,7 +45,8 @@ class BehaveTest(unittest.TestCase):
     def test_runner_with_undefined_steps_expect_display_undefined_steps(self):
         actual = self.run_test()
 
-        self.assertIn('You can implement step definitions for undefined steps with', actual.err)
+        self.assertIn(
+            'You can implement step definitions for undefined steps with', actual.err)
 
 if __name__ == '__main__':
     unittest.main()
