@@ -3,6 +3,7 @@ try:
 except ImportError:
     import unittest
 
+import os
 import subprocess
 from collections import namedtuple
 
@@ -48,6 +49,11 @@ class BehaveTest(unittest.TestCase):
         self.assertIn(
             'You can implement step definitions for undefined steps with', actual.err)
 
+    # Skip because these versions do not support dotted notation arguments
+    # for specifying tests
+    @unittest.skipIf(os.getenv('DJANGO') == 'django==1.4.13' or
+                     os.getenv('DJANGO') == 'django==1.5',
+                     "Not supported in this version of Django")
     def test_runner_with_subdirectory_app(self):
         actual = self.run_test(app='example_proj.apps.subdirectory_app')
 
