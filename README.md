@@ -106,3 +106,6 @@ You can run all unittest2 tests with the following:
     python tests.py
 
 The tests use the example_proj project which has installed the example_app application.
+
+If you're using a virtualenv, activate it before running this command, else it will fail.
+
