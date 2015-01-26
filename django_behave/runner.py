@@ -120,19 +120,6 @@ def parse_argv(argv, option_info):
     return (new_argv, our_opts)
 
 
-# def _base_test_server_class():
-#     """
-#     By default inherit from LiveServerTestCase. This is all
-#     not very elegant, though it serves a purpose:
-
-#     - There are two possible base classes: one for enabling the serving of
-#      staticfiles, and one that does not
-#     """
-#     if app_settings.ENABLE_STATIC_TEST_SERVER:
-#         return StaticLiveServerTestCase
-#     return LiveServerTestCase
-
-
 class DjangoBehaveTestCase(LiveServerTestCase):
     fixtures = app_settings.FIXTURES
 
