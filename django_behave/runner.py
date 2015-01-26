@@ -17,12 +17,8 @@ from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 from . import app_settings
-#test
-#from django.test.utils import override_settings
-import sys
 
-# import logging
-# log = logging.getLogger("runner.py")
+import sys
 
 
 def get_app_dir(app_module):
@@ -117,6 +113,7 @@ def parse_argv(argv, option_info):
 
     return (new_argv, our_opts)
 
+
 def _base_test_server_class():
     """
     By default inherit from LiveServerTestCase. This is all
@@ -129,9 +126,10 @@ def _base_test_server_class():
         return StaticLiveServerTestCase
     return LiveServerTestCase
 
-#@override_settings(DEBUG=True)
+
 class DjangoBehaveTestCase(_base_test_server_class()):
-    fixtures = ['fixtures/socialaccounts.json', 'fixtures/sites.json']
+    fixtures = app_settings.FIXTURES
+
     def __init__(self, **kwargs):
         self.features_dir = kwargs.pop('features_dir')
         self.option_info = kwargs.pop('option_info')

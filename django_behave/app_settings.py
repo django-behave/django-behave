@@ -24,6 +24,12 @@ class AppSettings(object):
     def ENABLE_STATIC_TEST_SERVER(self):
         return self._setting("ENABLE_STATIC_TEST_SERVER", False)
 
+    # Allows fixtures to be specified in the projects settings file
+    # more modular design
+    @property
+    def FIXTURES(self):
+        return self._setting("FIXTURES", '')
+
 # Ugly? Guido recommends this himself ...
 # http://mail.python.org/pipermail/python-ideas/2012-May/014969.html
 import sys
