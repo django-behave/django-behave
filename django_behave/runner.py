@@ -8,15 +8,21 @@ try:
     from django.test.runner import DiscoverRunner as BaseRunner
 except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
-from django.test import LiveServerTestCase
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.db.models import get_app
 
+from django.db.models import get_app
 from behave.configuration import Configuration, ConfigError, options
 from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 from . import app_settings
+
+try:
+    if (app_settings.ENABLE_STATIC_TEST_SERVER):
+       from django.contrib.staticfiles.testing import StaticLiveServerTestCase as LiveServerTestCase
+    else:
+        from django.test import LiveServerTestCase
+except ImportError:
+    from django.test import LiveServerTestCase
 
 import sys
 
@@ -114,20 +120,20 @@ def parse_argv(argv, option_info):
     return (new_argv, our_opts)
 
 
-def _base_test_server_class():
-    """
-    By default inherit from LiveServerTestCase. This is all
-    not very elegant, though it serves a purpose:
+# def _base_test_server_class():
+#     """
+#     By default inherit from LiveServerTestCase. This is all
+#     not very elegant, though it serves a purpose:
 
-    - There are two possible base classes: one for enabling the serving of
-     staticfiles, and one that does not
-    """
-    if app_settings.ENABLE_STATIC_TEST_SERVER:
-        return StaticLiveServerTestCase
-    return LiveServerTestCase
+#     - There are two possible base classes: one for enabling the serving of
+#      staticfiles, and one that does not
+#     """
+#     if app_settings.ENABLE_STATIC_TEST_SERVER:
+#         return StaticLiveServerTestCase
+#     return LiveServerTestCase
 
 
-class DjangoBehaveTestCase(_base_test_server_class()):
+class DjangoBehaveTestCase(LiveServerTestCase):
     fixtures = app_settings.FIXTURES
 
     def __init__(self, **kwargs):
