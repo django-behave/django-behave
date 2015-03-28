@@ -1,5 +1,5 @@
-"""Django test runner which uses behave for BDD tests.
-"""
+'''Django test runner which uses behave for BDD tests.
+'''
 
 from optparse import make_option
 from os.path import dirname, abspath, basename, join, isdir
@@ -11,7 +11,7 @@ except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
 try:
     # This is for Django 1.7 where StaticLiveServerTestCase is needed for
-    # static files to "just work"
+    # static files to 'just work'
     from django.contrib.staticfiles.testing import (
         StaticLiveServerTestCase as LiveServerTestCase)
 except ImportError:
@@ -42,20 +42,20 @@ def get_features(app_module):
 # Get Behave command line options and add our own
 def get_options():
     option_list = (
-        make_option("--behave_browser",
-            action="store",
-            dest="browser",
-            help="Specify the browser to use for testing",
+        make_option('--behave_browser',
+            action='store',
+            dest='browser',
+            help='Specify the browser to use for testing',
         ),
     )
 
-    option_info = {"--behave_browser": True}
+    option_info = {'--behave_browser': True}
 
     for fixed, keywords in options:
         # Look for the long version of this option
         long_option = None
         for option in fixed:
-            if option.startswith("--"):
+            if option.startswith('--'):
                 long_option = option
                 break
 
@@ -66,10 +66,10 @@ def get_options():
                 del keywords['type']
 
             # Remove 'config_help' as that's not a valid optparse keyword
-            if "config_help" in keywords:
-                keywords.pop("config_help")
+            if 'config_help' in keywords:
+                keywords.pop('config_help')
 
-            name = "--behave_" + long_option[2:]
+            name = '--behave_' + long_option[2:]
 
             option_list = option_list + \
                 (make_option(name, **keywords),)
@@ -78,8 +78,8 @@ def get_options():
             # can deal with it later.  'has_arg' refers to if the option has
             # an argument.  A boolean option, for example, would NOT have an
             # argument.
-            action = keywords.get("action", "store")
-            if action == "store" or action == "append":
+            action = keywords.get('action', 'store')
+            if action == 'store' or action == 'append':
                 has_arg = True
             else:
                 has_arg = False
@@ -93,20 +93,20 @@ def get_options():
 # it's options
 def parse_argv(argv, option_info):
     behave_options = option_info.keys()
-    new_argv = ["behave",]
-    our_opts = {"browser": None}
+    new_argv = ['behave',]
+    our_opts = {'browser': None}
 
     for index in xrange(len(argv)): #using range to have compatybility with Py3
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
-        if argv[index] in behave_options and argv[index].startswith("--"):
-            if argv[index] == "--behave_browser":
-                our_opts["browser"] = argv[index + 1]
+        if argv[index] in behave_options and argv[index].startswith('--'):
+            if argv[index] == '--behave_browser':
+                our_opts['browser'] = argv[index + 1]
                 index += 1  # Skip past browser option arg
             else:
                 # Convert to Behave option
-                new_argv.append("--" + argv[index][9:])
+                new_argv.append('--' + argv[index][9:])
 
                 # Add option argument if there is one
                 if option_info[argv[index]] == True:
@@ -136,7 +136,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         (sys.argv, our_opts) = parse_argv(old_argv, self.option_info)
         self.behave_config = Configuration()
         sys.argv = old_argv
-        self.behave_config.browser = our_opts["browser"]
+        self.behave_config.browser = our_opts['browser']
 
         self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
         self.behave_config.paths = self.get_features_dir()
@@ -161,23 +161,23 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             undefined_steps = runner.undefined
 
         if self.behave_config.show_snippets and undefined_steps:
-            msg = u"\nYou can implement step definitions for undefined steps with "
-            msg += u"these snippets:\n\n"
+            msg = u'\nYou can implement step definitions for undefined steps with '
+            msg += u'these snippets:\n\n'
             printed = set()
 
             if sys.version_info[0] == 3:
-                string_prefix = "('"
+                string_prefix = '(\''
             else:
-                string_prefix = u"(u'"
+                string_prefix = u'(u\''
 
             for step in set(undefined_steps):
                 if step in printed:
                     continue
                 printed.add(step)
 
-                msg += u"@" + step.step_type + string_prefix + step.name + u"')\n"
-                msg += u"def impl(context):\n"
-                msg += u"    assert False\n\n"
+                msg += u'@' + step.step_type + string_prefix + step.name + u'\')\n'
+                msg += u'def impl(context):\n'
+                msg += u'    assert False\n\n'
 
             sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
             sys.stderr.flush()
@@ -190,7 +190,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 class DjangoBehaveTestSuiteRunner(BaseRunner):
     # Set up to accept all of Behave's command line options and our own.  In
     # order to NOT conflict with Django's test command, we'll start all options
-    # with the prefix "--behave_" (we'll only do the long version of an option).
+    # with the prefix '--behave_' (we'll only do the long version of an option).
     (option_list, option_info) = get_options()
 
     def make_bdd_test_suite(self, features_dir):
