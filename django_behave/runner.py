@@ -12,8 +12,8 @@ except ImportError:
 try:
     # This is for Django 1.7 where StaticLiveServerTestCase is needed for
     # static files to 'just work'
-    from django.contrib.staticfiles.testing import (
-        StaticLiveServerTestCase as LiveServerTestCase)
+    from django.contrib.staticfiles.testing import (StaticLiveServerTestCase as
+                                                    LiveServerTestCase)
 except ImportError:
     from django.test import LiveServerTestCase
 
@@ -41,13 +41,10 @@ def get_features(app_module):
 
 # Get Behave command line options and add our own
 def get_options():
-    option_list = (
-        make_option('--behave_browser',
-            action='store',
-            dest='browser',
-            help='Specify the browser to use for testing',
-        ),
-    )
+    option_list = (make_option('--behave_browser',
+                               action='store',
+                               dest='browser',
+                               help='Specify the browser to use for testing',),)
 
     option_info = {'--behave_browser': True}
 
@@ -59,20 +56,19 @@ def get_options():
                 long_option = option
                 break
 
-        # Only deal with those options that have a long version
+# Only deal with those options that have a long version
         if long_option:
             # remove function types, as they are not compatible with optparse
             if hasattr(keywords.get('type'), '__call__'):
                 del keywords['type']
 
-            # Remove 'config_help' as that's not a valid optparse keyword
+# Remove 'config_help' as that's not a valid optparse keyword
             if 'config_help' in keywords:
                 keywords.pop('config_help')
 
             name = '--behave_' + long_option[2:]
 
-            option_list = option_list + \
-                (make_option(name, **keywords),)
+            option_list = option_list + (make_option(name, **keywords),)
 
             # Need to store a little info about the Behave option so that we
             # can deal with it later.  'has_arg' refers to if the option has
@@ -93,10 +89,11 @@ def get_options():
 # it's options
 def parse_argv(argv, option_info):
     behave_options = option_info.keys()
-    new_argv = ['behave',]
+    new_argv = ['behave', ]
     our_opts = {'browser': None}
 
-    for index in xrange(len(argv)): #using range to have compatybility with Py3
+    # using range to have compatybility with Py3
+    for index in xrange(len(argv)):
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
@@ -110,13 +107,14 @@ def parse_argv(argv, option_info):
 
                 # Add option argument if there is one
                 if option_info[argv[index]] == True:
-                    new_argv.append(argv[index+1])
+                    new_argv.append(argv[index + 1])
                     index += 1  # Skip past option arg
 
     return (new_argv, our_opts)
 
 
 class DjangoBehaveTestCase(LiveServerTestCase):
+
     def __init__(self, **kwargs):
         self.features_dir = kwargs.pop('features_dir')
         self.option_info = kwargs.pop('option_info')
@@ -138,20 +136,18 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         sys.argv = old_argv
         self.behave_config.browser = our_opts['browser']
 
-        self.behave_config.server_url = self.live_server_url  # property of LiveServerTestCase
+        # property of LiveServerTestCase
+        self.behave_config.server_url = self.live_server_url
         self.behave_config.paths = self.get_features_dir()
-        self.behave_config.format = self.behave_config.format if self.behave_config.format else ['pretty']
-        # disable these in case you want to add set_trace in the tests you're developing
-        self.behave_config.stdout_capture =\
-            self.behave_config.stdout_capture if self.behave_config.stdout_capture else False
-        self.behave_config.stderr_capture =\
-            self.behave_config.stderr_capture if self.behave_config.stderr_capture else False
+
+        if not self.behave_config.format:
+            self.behave_config.format = ['pretty']
 
     def runTest(self, result=None):
         # run behave on a single directory
 
         # from behave/__main__.py
-        #stream = self.behave_config.output
+        # stream = self.behave_config.output
         runner = BehaveRunner(self.behave_config)
         failed = runner.run()
 
@@ -161,8 +157,8 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             undefined_steps = runner.undefined
 
         if self.behave_config.show_snippets and undefined_steps:
-            msg = u'\nYou can implement step definitions for undefined steps with '
-            msg += u'these snippets:\n\n'
+            msg = u'\nYou can implement step definitions for undefined steps '
+            msg += u'with these snippets:\n\n'
             printed = set()
 
             if sys.version_info[0] == 3:
@@ -175,9 +171,14 @@ class DjangoBehaveTestCase(LiveServerTestCase):
                     continue
                 printed.add(step)
 
-                msg += u'@' + step.step_type + string_prefix + step.name + u'\')\n'
-                msg += u'def impl(context):\n'
-                msg += u'    assert False\n\n'
+                step_string = u'@%s%s%s\')\n' % (
+                    step.step_type, string_prefix, step.name)
+
+                step_string += u'%s\n%s\n\n' % (
+                    'def impl(context):',
+                    '    assert False')
+
+                msg += step_string
 
             sys.stderr.write(escapes['undefined'] + msg + escapes['reset'])
             sys.stderr.flush()
@@ -194,7 +195,8 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
     (option_list, option_info) = get_options()
 
     def make_bdd_test_suite(self, features_dir):
-        return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
+        return DjangoBehaveTestCase(features_dir=features_dir,
+                                    option_info=self.option_info)
 
     def add_app(self, label):
         if '.' in label:
@@ -202,15 +204,14 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
             # name
             label = label.split('.')[-1]
 
-        # If this errors out, it means it was not an app name
+# If this errors out, it means it was not an app name
         try:
             app = get_app(label)
         except ImproperlyConfigured:
             return None
 
-
-        # Check to see if a separate 'features' module exists,
-        # parallel to the models module
+# Check to see if a separate 'features' module exists,
+# parallel to the models module
         features_dir = get_features(app)
         if features_dir is not None:
             # build a test suite for this directory
@@ -228,8 +229,8 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
             if test:
                 extra_tests.append(test)
 
-        # If step labels aren't given, add ALL behave tests from all apps
-        # (Except django_behave :)
+# If step labels aren't given, add ALL behave tests from all apps
+# (Except django_behave :)
         if not test_labels:
             for app in settings.INSTALLED_APPS:
                 if app != 'django_behave':
@@ -237,6 +238,6 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
                     if test:
                         extra_tests.append(test)
 
-        return super(DjangoBehaveTestSuiteRunner, self
-                     ).build_suite(test_labels, extra_tests, **kwargs)
+        return super(DjangoBehaveTestSuiteRunner,
+                     self).build_suite(test_labels, extra_tests, **kwargs)
 # eof:
