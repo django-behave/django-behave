@@ -3,16 +3,17 @@
 
 from optparse import make_option
 from os.path import dirname, abspath, basename, join, isdir
+import sys
 
 try:
     from django.test.runner import DiscoverRunner as BaseRunner
 except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
-
 try:
     # This is for Django 1.7 where StaticLiveServerTestCase is needed for
     # static files to "just work"
-    from django.contrib.staticfiles.testing import StaticLiveServerTestCase as LiveServerTestCase
+    from django.contrib.staticfiles.testing import (
+        StaticLiveServerTestCase as LiveServerTestCase)
 except ImportError:
     from django.test import LiveServerTestCase
 
@@ -22,13 +23,12 @@ from django.utils import six
 from django.utils.six.moves import xrange
 from django.core.exceptions import ImproperlyConfigured
 
-from behave.configuration import Configuration, ConfigError, options
+from behave.configuration import Configuration, options
 from behave.runner import Runner as BehaveRunner
-from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
 
-import sys
+
 
 
 
