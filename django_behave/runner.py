@@ -28,19 +28,10 @@ from behave.runner import Runner as BehaveRunner
 from behave.formatter.ansi_escapes import escapes
 
 
-
-
-
-
-def get_app_dir(app_module):
+def get_features(app_module):
     app_dir = dirname(app_module.__file__)
     if basename(app_dir) == 'models':
         app_dir = abspath(join(app_dir, '..'))
-    return app_dir
-
-
-def get_features(app_module):
-    app_dir = get_app_dir(app_module)
     features_dir = abspath(join(app_dir, 'features'))
     if isdir(features_dir):
         return features_dir
