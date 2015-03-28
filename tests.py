@@ -3,12 +3,15 @@ try:
 except ImportError:
     import unittest
 
+import os
 import subprocess
 from collections import namedtuple
 
 Std = namedtuple('std', ['out', 'err'])
 
+
 class BehaveTest(unittest.TestCase):
+
     def run_test(self, app='example_app', settings='example_proj.settings', *args, **kwargs):
         """
         test the given app with the given args and kwargs passed to manage.py. kwargs are converted from
@@ -20,7 +23,8 @@ class BehaveTest(unittest.TestCase):
         kwargs['settings'] = settings
         for k, v in kwargs.items():
             args += ['--%s' % k, v]
-        p = subprocess.Popen(['./manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(
+            ['python', 'manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         return Std(*[str(item) for item in out])
 
@@ -42,7 +46,18 @@ class BehaveTest(unittest.TestCase):
     def test_runner_with_undefined_steps_expect_display_undefined_steps(self):
         actual = self.run_test()
 
-        self.assertIn('You can implement step definitions for undefined steps with', actual.err)
+        self.assertIn(
+            'You can implement step definitions for undefined steps with', actual.err)
+
+    # Skip because these versions do not support dotted notation arguments
+    # for specifying tests
+    @unittest.skipIf(os.getenv('DJANGO') == 'django==1.4.13' or
+                     os.getenv('DJANGO') == 'django==1.5',
+                     "Not supported in this version of Django")
+    def test_runner_with_subdirectory_app(self):
+        actual = self.run_test(app='example_proj.apps.subdirectory_app')
+
+        self.assertIn('scenario passed', actual.out)
 
 if __name__ == '__main__':
     unittest.main()
