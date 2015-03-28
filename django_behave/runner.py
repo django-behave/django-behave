@@ -16,6 +16,7 @@ try:
 except ImportError:
     from django.test import LiveServerTestCase
 
+from django.conf import settings
 from django.db.models import get_app
 from django.utils import six
 from django.utils.six.moves import xrange
@@ -204,6 +205,26 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
     def make_bdd_test_suite(self, features_dir):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
 
+    def add_app(self, label):
+        if '.' in label:
+            # Assume the last value in the dot notation label is the app
+            # name
+            label = label.split('.')[-1]
+
+        # If this errors out, it means it was not an app name
+        try:
+            app = get_app(label)
+        except ImproperlyConfigured:
+            return None
+
+
+        # Check to see if a separate 'features' module exists,
+        # parallel to the models module
+        features_dir = get_features(app)
+        if features_dir is not None:
+            # build a test suite for this directory
+            return self.make_bdd_test_suite(features_dir)
+
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         extra_tests = extra_tests or []
         #
@@ -212,24 +233,18 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
 
         # always get all features for given apps (for convenience)
         for label in test_labels:
-            if '.' in label:
-                # Assume the last value in the dot notation label is the app
-                # name
-                label = label.split('.')[-1]
+            test = self.add_app(label)
+            if test:
+                extra_tests.append(test)
 
-            # If this errors out, it means it was not an app name
-            try:
-                app = get_app(label)
-            except ImproperlyConfigured:
-                continue
-
-
-            # Check to see if a separate 'features' module exists,
-            # parallel to the models module
-            features_dir = get_features(app)
-            if features_dir is not None:
-                # build a test suite for this directory
-                extra_tests.append(self.make_bdd_test_suite(features_dir))
+        # If step labels aren't given, add ALL behave tests from all apps
+        # (Except django_behave :)
+        if not test_labels:
+            for app in settings.INSTALLED_APPS:
+                if app != 'django_behave':
+                    test = self.add_app(app)
+                    if test:
+                        extra_tests.append(test)
 
         return super(DjangoBehaveTestSuiteRunner, self
                      ).build_suite(test_labels, extra_tests, **kwargs)
