@@ -242,7 +242,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
                      ).build_suite(test_labels, extra_tests, **kwargs)
 
 
-if hasattr(BaseRunner, 'option_list'):
+if not hasattr(BaseRunner, 'add_arguments'):
     option_list, option_info = get_options()
     DjangoBehaveTestSuiteRunner.option_list = option_list
     DjangoBehaveTestSuiteRunner.option_info = option_info
