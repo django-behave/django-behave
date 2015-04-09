@@ -16,7 +16,16 @@ try:
 except ImportError:
     from django.test import LiveServerTestCase
 
-from django.apps import apps
+try:
+    # since Django 1.7
+    from django.apps import apps
+    
+    def get_app(label):
+        return apps.get_app_config(label).models_module
+        
+except ImportError:
+    from django.db.models import get_app
+
 from django.utils import six
 from django.utils.six.moves import xrange
 
@@ -220,7 +229,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
             if '.' in label:
                 print("Ignoring label with dot in: %s" % label)
                 continue
-            app = apps.get_app_config(label).models_module
+            app = get_app(label)
 
             # Check to see if a separate 'features' module exists,
             # parallel to the models module
