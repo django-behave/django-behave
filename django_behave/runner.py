@@ -16,7 +16,7 @@ try:
 except ImportError:
     from django.test import LiveServerTestCase
 
-from django.db.models import get_app
+from django.apps import apps
 from django.utils import six
 from django.utils.six.moves import xrange
 
@@ -195,10 +195,16 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
 
 class DjangoBehaveTestSuiteRunner(BaseRunner):
-    # Set up to accept all of Behave's command line options and our own.  In
-    # order to NOT conflict with Django's test command, we'll start all options
-    # with the prefix "--behave_" (we'll only do the long version of an option).
-    (option_list, option_info) = get_options()
+
+    @classmethod
+    def add_arguments(cls, parser):
+        # Set up to accept all of Behave's command line options and our own.  In
+        # order to NOT conflict with Django's test command, we'll start all options
+        # with the prefix "--behave_" (we'll only do the long version of an option).
+        option_list, cls.option_info = get_options()
+
+        for option in option_list:
+            parser.add_argument(*option._long_opts, action=option.action, dest=option.dest, help=option.help)
 
     def make_bdd_test_suite(self, features_dir):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
@@ -214,7 +220,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
             if '.' in label:
                 print("Ignoring label with dot in: %s" % label)
                 continue
-            app = get_app(label)
+            app = apps.get_app_config(label).models_module
 
             # Check to see if a separate 'features' module exists,
             # parallel to the models module
