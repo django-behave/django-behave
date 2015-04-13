@@ -10,6 +10,11 @@ except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
 
 try:
+    from django.test.runner import reorder_suite
+except ImportError:
+    from django.test.simple import reorder_suite
+
+try:
     # This is for Django 1.7 where StaticLiveServerTestCase is needed for
     # static files to "just work"
     from django.contrib.staticfiles.testing import StaticLiveServerTestCase as LiveServerTestCase
@@ -19,14 +24,14 @@ except ImportError:
 try:
     # since Django 1.7
     from django.apps import apps
-    
+
     def get_app(label):
         return apps.get_app_config(label).models_module
-        
+
 except ImportError:
     from django.db.models import get_app
 
-from django.utils import six
+from django.utils import six, unittest
 from django.utils.six.moves import xrange
 
 from behave.configuration import Configuration, ConfigError, options
@@ -246,5 +251,23 @@ if not hasattr(BaseRunner, 'add_arguments'):
     option_list, option_info = get_options()
     DjangoBehaveTestSuiteRunner.option_list = option_list
     DjangoBehaveTestSuiteRunner.option_info = option_info
+
+
+class DjangoBehaveOnlyTestSuiteRunner(DjangoBehaveTestSuiteRunner):
+
+    def build_suite(self, test_labels, extra_tests=None, **kwargs):
+        suite = unittest.TestSuite()
+
+        for label in test_labels:
+            if '.' in label:
+                print("Ignoring label with dot in: %s" % label)
+                continue
+            app = get_app(label)
+
+            features_dir = get_features(app)
+            if features_dir is not None:
+                suite.addTest(self.make_bdd_test_suite(features_dir))
+
+        return reorder_suite(suite, (unittest.TestCase,))
 
 # eof:
