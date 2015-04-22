@@ -2,7 +2,7 @@
 Tested on:
 - Python 2.6, 2.7 
 - Python 3.3, 3.4 
-- Django v1.4-1.8
+- Django v1.6-1.8
 
 
 **Behave still has many 3.x bugs. Please ensure the bug is with django-behave and not with Behave.**

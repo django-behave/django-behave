@@ -6,8 +6,6 @@ python:
   - "3.4"
 # django 1.4.0 doesn't have six. Only newest version have this module.
 env:
-  - DJANGO=django==1.4.13
-  - DJANGO=django==1.5
   - DJANGO=django==1.6
   - DJANGO=django==1.7
   - DJANGO=django==1.8
