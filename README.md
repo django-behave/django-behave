@@ -5,7 +5,8 @@ Tested on:
 - Django v1.6-1.8
 
 
-**Behave still has many 3.x bugs. Please ensure the bug is with django-behave and not with Behave.**
+**This is a fork of django-behave/django-behave which supports testing of apps in subdirectories.
+The app loading mechanism for django was changed in version 1.6. Therefore older versions are not supported by this fork**
 
 django-behave
 =============
@@ -54,7 +55,7 @@ REQUIREMENTS
 The main one is the 'behave' module, of course, which provides the BDD toolset for Python.
 
 Also used are:
-- django >= 1.4 (needed for the LiveServerTestCase)
+- django >= 1.6
 - selenium
 
 See requirements.txt for details.
