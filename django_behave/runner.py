@@ -262,9 +262,11 @@ class DjangoBehaveOnlyTestSuiteRunner(DjangoBehaveTestSuiteRunner):
 
         for label in test_labels:
             if '.' in label:
-                print("Ignoring label with dot in: %s" % label)
-                continue
-            app = get_app(label)
+                short_label = label.split('.')[-1]
+            else:
+                short_label = None
+
+            app = get_app(short_label or label)
 
             features_dir = get_features(app)
             if features_dir is not None:
