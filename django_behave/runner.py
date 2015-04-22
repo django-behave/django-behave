@@ -10,14 +10,28 @@ except ImportError:
     from django.test.simple import DjangoTestSuiteRunner as BaseRunner
 
 try:
+    from django.test.runner import reorder_suite
+except ImportError:
+    from django.test.simple import reorder_suite
+
+try:
     # This is for Django 1.7 where StaticLiveServerTestCase is needed for
     # static files to "just work"
     from django.contrib.staticfiles.testing import StaticLiveServerTestCase as LiveServerTestCase
 except ImportError:
     from django.test import LiveServerTestCase
 
-from django.db.models import get_app
-from django.utils import six
+try:
+    # since Django 1.7
+    from django.apps import apps
+
+    def get_app(label):
+        return apps.get_app_config(label).models_module
+
+except ImportError:
+    from django.db.models import get_app
+
+from django.utils import six, unittest
 from django.utils.six.moves import xrange
 
 from behave.configuration import Configuration, ConfigError, options
@@ -160,12 +174,7 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         # from behave/__main__.py
         #stream = self.behave_config.output
         runner = BehaveRunner(self.behave_config)
-        try:
-            failed = runner.run()
-        except ParserError as e:
-            sys.exit(str(e))
-        except ConfigError as e:
-            sys.exit(str(e))
+        failed = runner.run()
 
         try:
             undefined_steps = runner.undefined_steps
@@ -195,15 +204,21 @@ class DjangoBehaveTestCase(LiveServerTestCase):
             sys.stderr.flush()
 
         if failed:
-            sys.exit(1)
+            raise AssertionError('There were behave failures, see output above')
         # end of from behave/__main__.py
 
 
 class DjangoBehaveTestSuiteRunner(BaseRunner):
-    # Set up to accept all of Behave's command line options and our own.  In
-    # order to NOT conflict with Django's test command, we'll start all options
-    # with the prefix "--behave_" (we'll only do the long version of an option).
-    (option_list, option_info) = get_options()
+
+    @classmethod
+    def add_arguments(cls, parser):
+        # Set up to accept all of Behave's command line options and our own.  In
+        # order to NOT conflict with Django's test command, we'll start all options
+        # with the prefix "--behave_" (we'll only do the long version of an option).
+        option_list, cls.option_info = get_options()
+
+        for option in option_list:
+            parser.add_argument(*option._long_opts, action=option.action, dest=option.dest, help=option.help)
 
     def make_bdd_test_suite(self, features_dir):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
@@ -232,4 +247,29 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
 
         return super(DjangoBehaveTestSuiteRunner, self
                      ).build_suite(test_labels, extra_tests, **kwargs)
+
+
+if not hasattr(BaseRunner, 'add_arguments'):
+    option_list, option_info = get_options()
+    DjangoBehaveTestSuiteRunner.option_list = option_list
+    DjangoBehaveTestSuiteRunner.option_info = option_info
+
+
+class DjangoBehaveOnlyTestSuiteRunner(DjangoBehaveTestSuiteRunner):
+
+    def build_suite(self, test_labels, extra_tests=None, **kwargs):
+        suite = unittest.TestSuite()
+
+        for label in test_labels:
+            if '.' in label:
+                print("Ignoring label with dot in: %s" % label)
+                continue
+            app = get_app(label)
+
+            features_dir = get_features(app)
+            if features_dir is not None:
+                suite.addTest(self.make_bdd_test_suite(features_dir))
+
+        return reorder_suite(suite, (unittest.TestCase,))
+
 # eof:
