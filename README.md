@@ -5,8 +5,9 @@ Tested on:
 - Django v1.6-1.8
 
 
-**This is a fork of django-behave/django-behave which supports testing of apps in subdirectories.
-The app loading mechanism for django was changed in version 1.6. Therefore older versions are not supported by this fork**
+**This is a fork of django-behave/django-behave which supports testing of apps in subdirectories. **
+
+**The app loading mechanism only supports Django version 1.6 and higher**
 
 django-behave
 =============
