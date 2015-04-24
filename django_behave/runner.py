@@ -224,27 +224,25 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
 
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
-        extra_tests = extra_tests or []
-        #
-        # Add BDD tests to the extra_tests
-        #
+        from django.apps import apps
+
+        suite = self.test_suite()
+
+        if test_labels:
+            apps_to_test = [apps.get_app(label) for label in test_labels]
+        else:
+            apps_to_test = apps.get_apps()
 
         # always get all features for given apps (for convenience)
-        for label in test_labels:
-            if '.' in label:
-                print("Ignoring label with dot in: %s" % label)
-                continue
-            app = get_app(label)
-
+        for app in apps_to_test:
             # Check to see if a separate 'features' module exists,
             # parallel to the models module
             features_dir = get_features(app)
             if features_dir is not None:
                 # build a test suite for this directory
-                extra_tests.append(self.make_bdd_test_suite(features_dir))
+                suite.addTest(self.make_bdd_test_suite(features_dir))
 
-        return super(DjangoBehaveTestSuiteRunner, self
-                     ).build_suite(test_labels, extra_tests, **kwargs)
+        return suite
 
 
 if not hasattr(BaseRunner, 'add_arguments'):
