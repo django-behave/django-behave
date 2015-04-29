@@ -31,7 +31,8 @@ try:
 except ImportError:
     from django.db.models import get_app
 
-from django.utils import six, unittest
+import unittest
+from django.utils import six
 from django.utils.six.moves import xrange
 
 from behave.configuration import Configuration, ConfigError, options
