@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/django-behave/django-behave.svg?branch=master)](https://travis-ci.org/django-behave/django-behave)  
 Tested on:
-- Python 2.6, 2.7 
+- Python 2.7 
 - Python 3.3, 3.4 
 - Django v1.4-1.8
 
