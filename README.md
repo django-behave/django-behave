@@ -64,7 +64,7 @@ AUTOMATION LIBRARY
 
 Django_behave is agnostic about which automation library you use inside the tests.
 
-I (Rachel, original author of django-behave) like splinter (http://splinter.cobrateam.info).
+I (Rachel, original author of django-behave) like splinter (https://splinter.readthedocs.org/).
 
 You will need to setup a browser for use with this library.
 
