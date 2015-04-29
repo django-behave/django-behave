@@ -5,18 +5,18 @@ python:
   - "3.4"
 # django 1.4.0 doesn't have six. Only newest version have this module.
 env:
-  - DJANGO=django==1.4.13
-  - DJANGO=django==1.5
-  - DJANGO=django==1.6
-  - DJANGO=django==1.7
+  - DJANGO=django==1.4.20
+  - DJANGO=django==1.5.12
+  - DJANGO=django==1.6.11
+  - DJANGO=django==1.7.7
   - DJANGO=django==1.8
 # Django 1.4 doesn't support Python 3
 matrix:
   exclude:
     - python: "3.3"
-      env: DJANGO=django==1.4.13
+      env: DJANGO=django==1.4.20
     - python: "3.4"
-      env: DJANGO=django==1.4.13
+      env: DJANGO=django==1.4.20
 install:
   - pip install $DJANGO
   - "pip install -r requirements.txt"
