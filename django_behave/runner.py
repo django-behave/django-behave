@@ -26,7 +26,8 @@ try:
     from django.apps import apps
 
     def get_app(label):
-        return apps.get_app_config(label).models_module
+        appconfig = apps.get_app_config(label)
+        return appconfig.models_module or appconfig.module
 
 except ImportError:
     from django.db.models import get_app
