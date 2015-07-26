@@ -26,6 +26,10 @@ try:
     from django.apps import apps
 
     def get_app(label):
+        if label.endswith('/'):
+            print("Removing trailing slash of label: %s" % label)
+            label = label[:-1]
+
         appconfig = apps.get_app_config(label)
         return appconfig.models_module or appconfig.module
 
