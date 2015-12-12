@@ -32,7 +32,7 @@ class BehaveTest(unittest.TestCase):
     def test_runner_with_failfast_and_failing_unittest_expect_bdd_tests_not_run(self):
         actual = self.run_test('--failfast')
 
-        self.assertNotIn('scenario passed', actual.out)
+        self.assertNotIn('scenarios passed', actual.out)
 
     def test_runner_with_old_tag_specified_expect_only_old_bdd_test_run(self):
         actual = self.run_test(behave_tags='@old')
@@ -69,7 +69,7 @@ class BehaveOnlyTest(unittest.TestCase):
     def test_runner_with_failfast_and_failing_unittest_expect_bdd_tests_not_run(self):
         actual = self.run_test('--failfast')
 
-        self.assertNotIn('scenario passed', actual.out)
+        self.assertNotIn('scenarios passed', actual.out)
 
     def test_runner_with_old_tag_specified_expect_only_old_bdd_test_run(self):
         actual = self.run_test(behave_tags='@old')
