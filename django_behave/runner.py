@@ -150,6 +150,9 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.option_info = kwargs.pop('option_info')
         super(DjangoBehaveTestCase, self).__init__(**kwargs)
 
+    def __hash__(self):
+        return hash(type(self), self._testMethodName, self.features_dir)
+
     def get_features_dir(self):
         if isinstance(self.features_dir, six.string_types):
             return [self.features_dir]
@@ -268,7 +271,7 @@ class DjangoBehaveOnlyTestSuiteRunner(DjangoBehaveTestSuiteRunner):
         suite = unittest.TestSuite()
 
         for features_dir in self.get_feathers_dirs(test_labels):
-                suite.addTest(self.make_bdd_test_suite(features_dir))
+            suite.addTest(self.make_bdd_test_suite(features_dir))
 
         return reorder_suite(suite, (unittest.TestCase,))
 
