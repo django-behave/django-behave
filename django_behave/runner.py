@@ -150,6 +150,9 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.option_info = kwargs.pop('option_info')
         super(DjangoBehaveTestCase, self).__init__(**kwargs)
 
+    def __hash__(self):
+        return hash(type(self), self._testMethodName, self.features_dir)
+
     def get_features_dir(self):
         if isinstance(self.features_dir, six.string_types):
             return [self.features_dir]
