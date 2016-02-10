@@ -271,7 +271,7 @@ class DjangoBehaveOnlyTestSuiteRunner(DjangoBehaveTestSuiteRunner):
         suite = unittest.TestSuite()
 
         for features_dir in self.get_feathers_dirs(test_labels):
-                suite.addTest(self.make_bdd_test_suite(features_dir))
+            suite.addTest(self.make_bdd_test_suite(features_dir))
 
         return reorder_suite(suite, (unittest.TestCase,))
 
