@@ -20,9 +20,14 @@ class BehaveTest(unittest.TestCase):
         kwargs['settings'] = settings
         for k, v in kwargs.items():
             args += ['--%s' % k, v]
-        p = subprocess.Popen(['./manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(['./example_proj/manage.py', 'test', app] + args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         out = p.communicate()
         return Std(*[str(item) for item in out])
+
+    def test_runner_with_nested_app_expect_bdd_tests_run(self):
+        actual = self.run_test(app='sub_app')
+
+        self.assertIn('scenario passed', actual[0])
 
     def test_runner_with_default_args_expect_bdd_tests_run(self):
         actual = self.run_test()
