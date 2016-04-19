@@ -233,7 +233,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
     def make_bdd_test_suite(self, features_dir):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
 
-    def get_feathers_dirs(self, test_labels):
+    def get_features_dir(self, test_labels):
         if not test_labels:
             test_labels = settings.INSTALLED_APPS
 
@@ -252,7 +252,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         extra_tests = extra_tests or []
 
-        for features_dir in self.get_feathers_dirs(test_labels):
+        for features_dir in self.get_features_dir(test_labels):
             extra_tests.append(self.make_bdd_test_suite(features_dir))
 
         return super(DjangoBehaveTestSuiteRunner, self
@@ -270,7 +270,7 @@ class DjangoBehaveOnlyTestSuiteRunner(DjangoBehaveTestSuiteRunner):
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         suite = unittest.TestSuite()
 
-        for features_dir in self.get_feathers_dirs(test_labels):
+        for features_dir in self.get_features_dir(test_labels):
             suite.addTest(self.make_bdd_test_suite(features_dir))
 
         return reorder_suite(suite, (unittest.TestCase,))
