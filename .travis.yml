@@ -6,8 +6,6 @@ python:
   - "3.5"
 # django 1.4.0 doesn't have six. Only newest version have this module.
 env:
-  - DJANGO=django==1.4.20
-  - DJANGO=django==1.5.12
   - DJANGO=django==1.6.11
   - DJANGO=django==1.7.11
   - DJANGO=django==1.8.7
@@ -16,15 +14,7 @@ env:
 matrix:
   exclude:
     - python: "3.3"
-      env: DJANGO=django==1.4.20
-    - python: "3.3"
       env: DJANGO=django==1.9
-    - python: "3.4"
-      env: DJANGO=django==1.4.20
-    - python: "3.5"
-      env: DJANGO=django==1.4.20
-    - python: "3.5"
-      env: DJANGO=django==1.5.12
     - python: "3.5"
       env: DJANGO=django==1.6.11
     - python: "3.5"
