@@ -25,6 +25,7 @@ try:
     # since Django 1.7
     from django.apps import apps
 
+
     def get_app(label):
         if label.endswith('/'):
             print("Removing trailing slash of label: %s" % label)
@@ -46,9 +47,7 @@ from behave.runner import Runner as BehaveRunner
 from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
-
 import sys
-
 
 
 def get_app_dir(app_module):
@@ -71,10 +70,10 @@ def get_features(app_module):
 def get_options():
     option_list = (
         make_option("--behave_browser",
-            action="store",
-            dest="browser",
-            help="Specify the browser to use for testing",
-        ),
+                    action="store",
+                    dest="browser",
+                    help="Specify the browser to use for testing",
+                    ),
     )
 
     option_info = {"--behave_browser": True}
@@ -100,7 +99,7 @@ def get_options():
             name = "--behave_" + long_option[2:]
 
             option_list = option_list + \
-                (make_option(name, **keywords),)
+                          (make_option(name, **keywords),)
 
             # Need to store a little info about the Behave option so that we
             # can deal with it later.  'has_arg' refers to if the option has
@@ -121,10 +120,10 @@ def get_options():
 # it's options
 def parse_argv(argv, option_info):
     behave_options = option_info.keys()
-    new_argv = ["behave",]
+    new_argv = ["behave", ]
     our_opts = {"browser": None}
 
-    for index in xrange(len(argv)): #using range to have compatybility with Py3
+    for index in xrange(len(argv)):  # using range to have compatybility with Py3
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
@@ -138,7 +137,7 @@ def parse_argv(argv, option_info):
 
                 # Add option argument if there is one
                 if option_info[argv[index]] == True:
-                    new_argv.append(argv[index+1])
+                    new_argv.append(argv[index + 1])
                     index += 1  # Skip past option arg
 
     return (new_argv, our_opts)
@@ -173,16 +172,16 @@ class DjangoBehaveTestCase(LiveServerTestCase):
         self.behave_config.paths = self.get_features_dir()
         self.behave_config.format = self.behave_config.format if self.behave_config.format else ['pretty']
         # disable these in case you want to add set_trace in the tests you're developing
-        self.behave_config.stdout_capture =\
+        self.behave_config.stdout_capture = \
             self.behave_config.stdout_capture if self.behave_config.stdout_capture else False
-        self.behave_config.stderr_capture =\
+        self.behave_config.stderr_capture = \
             self.behave_config.stderr_capture if self.behave_config.stderr_capture else False
 
     def runTest(self, result=None):
         # run behave on a single directory
 
         # from behave/__main__.py
-        #stream = self.behave_config.output
+        # stream = self.behave_config.output
         runner = BehaveRunner(self.behave_config)
         failed = runner.run()
 
@@ -215,11 +214,10 @@ class DjangoBehaveTestCase(LiveServerTestCase):
 
         if failed:
             raise AssertionError('There were behave failures, see output above')
-        # end of from behave/__main__.py
+            # end of from behave/__main__.py
 
 
 class DjangoBehaveTestSuiteRunner(BaseRunner):
-
     @classmethod
     def add_arguments(cls, parser):
         # Set up to accept all of Behave's command line options and our own.  In
@@ -233,7 +231,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
     def make_bdd_test_suite(self, features_dir):
         return DjangoBehaveTestCase(features_dir=features_dir, option_info=self.option_info)
 
-    def get_feathers_dirs(self, test_labels):
+    def get_features_dirs(self, test_labels):
         if not test_labels:
             test_labels = settings.INSTALLED_APPS
 
@@ -252,7 +250,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         extra_tests = extra_tests or []
 
-        for features_dir in self.get_feathers_dirs(test_labels):
+        for features_dir in self.get_features_dirs(test_labels):
             extra_tests.append(self.make_bdd_test_suite(features_dir))
 
         return super(DjangoBehaveTestSuiteRunner, self
@@ -266,13 +264,10 @@ if not hasattr(BaseRunner, 'add_arguments'):
 
 
 class DjangoBehaveOnlyTestSuiteRunner(DjangoBehaveTestSuiteRunner):
-
     def build_suite(self, test_labels, extra_tests=None, **kwargs):
         suite = unittest.TestSuite()
 
-        for features_dir in self.get_feathers_dirs(test_labels):
+        for features_dir in self.get_features_dirs(test_labels):
             suite.addTest(self.make_bdd_test_suite(features_dir))
 
         return reorder_suite(suite, (unittest.TestCase,))
-
-# eof:
