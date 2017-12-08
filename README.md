@@ -2,7 +2,7 @@
 Tested on:
 - Python 2.7 
 - Python 3.3, 3.4 
-- Django v1.6-1.8
+- Django v1.6-1.11
 
 
 **This is a fork of django-behave/django-behave which supports testing of apps in subdirectories.**
