@@ -1,3 +1,14 @@
+[![Build Status](https://travis-ci.org/django-behave/django-behave.svg?branch=master)](https://travis-ci.org/django-behave/django-behave)  
+Tested on:
+- Python 2.7 
+- Python 3.3, 3.4 
+- Django v1.6-1.8
+
+
+**This is a fork of django-behave/django-behave which supports testing of apps in subdirectories.**
+
+**The app loading mechanism only supports Django version 1.6 and higher**
+
 django-behave
 =============
 
@@ -14,27 +25,30 @@ GOALS
 HOW TO USE
 ==========
 
-- add 'django_behave' to INSTALLED_APPS
-- set TEST_RUNNER to 'django_behave.runner.DjangoBehaveTestSuiteRunner'
+- add `django_behave` to `INSTALLED_APPS`
+- set `TEST_RUNNER` to `django_behave.runner.DjangoBehaveTestSuiteRunner`
+  or `django_behave.runner.DjangoBehaveOnlyTestSuiteRunner`
 - add features directories to apps
 - decide which automation library you want to use
 - setup your environment.py to use this library to open browser (see below)
-- copy django_behave/features/steps/library.py, if wanted.
+- copy `django_behave/features/steps/library.py`, if wanted.
 
 EXAMPLE
 =======
 
-Assuming you have a app called proj.apps.myapp
+Assuming you have an app called `proj.apps.myapp`:
 
 Edit INSTALLED_APPS, as above.
 Edit TEST_RUNNER, as above.
 
-Create proj/apps/myapp/features and proj/apps/myapp/features/steps.
+Create `proj/apps/myapp/features` and `proj/apps/myapp/features/steps`.
 
-Copy example/tutorial.feature to the features dir.
-Copy example/tutorial.py to the features/steps dir.
+Copy `example_app/features/tutorial.feature` to the `features` dir.
+Copy `example_app/features/steps/tutorial.py` to the `features/steps` dir.
 
+```
 $ python manage.py test myapp
+```
 
 should then show you django-behave in action, finding the tutorial feature
 and running the tests.
@@ -45,7 +59,7 @@ REQUIREMENTS
 The main one is the 'behave' module, of course, which provides the BDD toolset for Python.
 
 Also used are:
-- django >= 1.4 (needed for the LiveServerTestCase)
+- django >= 1.6
 - selenium
 
 See requirements.txt for details.
@@ -53,22 +67,24 @@ See requirements.txt for details.
 AUTOMATION LIBRARY
 ==================
 
-Django_behave is agnostic about which automation library you use inside the tests.
+`django_behave` is agnostic about which automation library you use inside the tests.
 
-I like splinter (http://splinter.cobrateam.info).
+I (Rachel, original author of django-behave) like splinter (https://splinter.readthedocs.org/).
 
 You will need to setup a browser for use with this library.
 
 For example, my features/environment.py file has this:
 
-    from splinter.browser import Browser
+```py
+from splinter.browser import Browser
 
-    def before_all(context):
-        context.browser = Browser()
+def before_all(context):
+    context.browser = Browser()
 
-    def after_all(context):
-        context.browser.quit()
-        context.browser = None
+def after_all(context):
+    context.browser.quit()
+    context.browser = None
+```
 
 COMMAND LINE OPTIONS
 ====================
@@ -90,7 +106,19 @@ browser to use for testing.  For example:
 
 The splinter before_all() example above could then use this option:
 
-    def before_all(context):
-        context.browser = Browser(context.config.browser)
+```py
+def before_all(context):
+    context.browser = Browser(context.config.browser)
+```
 
-            
+TESTING
+=======
+
+You can run all unittest2 tests with the following:
+
+    python tests.py
+
+The tests use the `example_proj` project which has installed the `example_app` application.
+
+If you're using a virtualenv, activate it before running this command, otherwise it will fail.
+
