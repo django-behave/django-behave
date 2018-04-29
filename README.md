@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/django-behave/django-behave.svg?branch=master)](https://travis-ci.org/django-behave/django-behave)  
+[![Build Status](https://travis-ci.org/django-behave/django-behave.svg?branch=master)](https://travis-ci.org/django-behave/django-behave)
 Tested on:
 - Python 2.7 
 - Python 3.3, 3.4 
@@ -94,11 +94,11 @@ with Django's manage.py test options, all options meant for django-behave start
 with '--behave_'.  For example, given the following Behave command:
 
     behave --no-color --tags @mytag ...
-    
+
 this would become:
 
     ./manage.py test --behave_no-color --behave_tags @mytag ...
-    
+
 In addition, the option '--behave_browser' can allow the user to specify which
 browser to use for testing.  For example:
 
