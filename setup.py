@@ -4,7 +4,7 @@ from setuptools import setup
 setup(
     name='django-behave',
     packages=['django_behave'],
-    version='0.1.5',
+    version='0.1.6',
     description='Django Test Runner for the Behave BDD module',
     author='Rachel Willmer',
     author_email='rachel@willmer.org',
@@ -20,7 +20,7 @@ setup(
         'Topic :: Software Development :: Testing',
     ],
     install_requires=[
-        'Django>=1.4',
+        'Django>=1.6',
         'selenium',
         'parse',
         'behave',
