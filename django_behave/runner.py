@@ -218,6 +218,7 @@ class DjangoBehaveTestSuiteRunner(BaseRunner):
         # Set up to accept all of Behave's command line options and our own.  In
         # order to NOT conflict with Django's test command, we'll start all options
         # with the prefix "--behave_" (we'll only do the long version of an option).
+        super(DjangoBehaveTestSuiteRunner, cls).add_arguments(parser)
         option_list, cls.option_info = get_options()
 
         for option in option_list:
