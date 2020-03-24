@@ -118,7 +118,7 @@ def parse_argv(argv, option_info):
     new_argv = ["behave", ]
     our_opts = {"browser": None}
 
-    for index in xrange(len(argv)):  # using range to have compatybility with Py3
+    for index in xrange(len(argv)):  # using range to have compatibility with Py3
         # If it's a behave option AND is the long version (starts with '--'),
         # then proceed to save the information.  If it's not a behave option
         # (which means it's most likely a Django test option), we ignore it.
