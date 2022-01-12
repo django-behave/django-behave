@@ -33,13 +33,12 @@ except ImportError:
     from django.db.models import get_app
 
 import unittest
-from django.utils import six
-from django.utils.six.moves import xrange
+import six
+from six.moves import xrange
 from django.conf import settings
 
-from behave.configuration import Configuration, ConfigError, options
+from behave.configuration import Configuration, options
 from behave.runner import Runner as BehaveRunner
-from behave.parser import ParserError
 from behave.formatter.ansi_escapes import escapes
 
 import sys
